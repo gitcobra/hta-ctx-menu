@@ -1,0 +1,111 @@
+#system---submenu-dialog-margin {
+  margin-right: -4px;
+  margin-left: 4px;
+}
+
+
+#container1 {
+  background-color: rgb(241, 241, 241);
+}
+body.trans-to-load #container1 {
+  filter: progid:DXImageTransform.Microsoft.Fade(duration=0.3);
+  zoom: 1;
+}
+body.trans-to-load #menu-table {
+  visibility: hidden;
+}
+body.load #menu-table {
+  visibility: visible;
+}
+
+#container1 {
+  padding: 2px;
+  border: 1px solid rgb(151, 151, 151);
+}
+
+#menu-table {
+  color: rgb(0, 0, 0);
+  font-size: x-small;
+  font-family: Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+#menu-table td.icon {
+  color: navy;
+  font-size: small;
+  text-align: center;
+  padding: 1px 3px 1px 1px;
+  border-style:solid;
+  border-color: rgb(241, 241, 241);
+  border-width: 1px 0px 1px 1px;
+  vertical-align: middle;
+}
+#menu-table td.icon .icon-container {
+  width: 20px;
+  border: 1px solid rgb(241, 241, 241);
+}
+#menu-table tr.checkbox .icon-container {
+  padding-top: 2px;
+}
+#menu-table tr.radio .icon-container {
+  padding: 1px 0px;
+}
+#menu-table td.checked .icon-container {
+  border: 1px solid rgb(174, 207, 247);
+  background-color: rgb(231, 241, 247);
+}
+
+
+#menu-table tr td.border {
+  display: block;
+  border: 1px solid rgb(224, 224, 224);
+  border-left-color: rgb(224, 224, 224);
+  border-right-color: rgb(255, 255, 255);
+}
+
+#menu-table td.content {
+  border-style:solid;
+  border-color: rgb(241, 241, 241);
+  border-width: 1px 0px;
+  padding-left: 2px;
+}
+#menu-table td.arrow {
+  border-style:solid;
+  border-color: rgb(241, 241, 241);
+  border-width: 1px 1px 1px 0px;
+  text-align: center;
+  font-family: Webdings;
+  padding-left: 0.6em;
+}
+
+#menu-table tr.separator .hr {
+  border-top: 1px solid rgb(224, 224, 224);
+  border-bottom: 1px solid rgb(255, 255, 255);
+  margin: 2px 0px;
+}
+#menu-table tr.separator td.icon-hidden-for-separator {
+	display: block;
+}
+
+
+#menu-table tr.highlight {
+  color: rgb(0, 0, 0);
+  background-color: rgb(231, 241, 247);
+}
+#menu-table tr.highlight td.icon {
+  border-color: rgb(174, 207, 247) white rgb(174, 207, 247) rgb(174, 207, 247);
+}
+#menu-table tr.highlight td.checked .icon-container {
+  border-color: rgb(201, 211, 217);
+}
+#menu-table tr.highlight td.border {
+  border-width: 1px 0px;
+  border-top-color: rgb(174, 207, 247);
+  border-bottom-color: rgb(174, 207, 247);
+}
+#menu-table tr.highlight td.content {
+  border-color: rgb(174, 207, 247) rgb(241, 241, 241) rgb(174, 207, 247) rgb(241, 241, 241);
+}
+#menu-table tr.highlight td.arrow {
+  border-color: rgb(174, 207, 247) rgb(174, 207, 247) rgb(174, 207, 247) rgb(241, 241, 241);
+}

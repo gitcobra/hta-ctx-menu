@@ -1,0 +1,219 @@
+<html>
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=5">
+<title>test-skin.HTA</title>
+<script src="../../dbg/json2.js"></script>
+<script src="../../dbg/debugger.js"></script>
+<script src="../dist/hta-ctx-menu.js"></script>
+</head>
+
+<style>
+li {
+  display: inline;
+  border: 1px dotted black;
+  cursor: pointer;
+  margin: 1px;
+  padding: 3px;
+}
+</style>
+
+<body>
+<div id="bgsound"></div>
+
+<h1>skin test</h1>
+<h3>internal skins</h3>
+<ul id="skin-list">
+  <li oncontextmenu="setSkinAndSounds('plain')">plain
+  <li oncontextmenu="setSkinAndSounds('default')">default
+  <li oncontextmenu="setSkinAndSounds('classic')">classic
+  <li oncontextmenu="setSkinAndSounds('xp')">xp
+  <li oncontextmenu="setSkinAndSounds('win7')">win7
+  <li oncontextmenu="setSkinAndSounds('win10')">win10
+</ul>
+<h3>from "./skins" folder</h3>
+<ul>
+  <li oncontextmenu="setSkinAndSounds('rpg')">RPG
+  <li oncontextmenu="setSkinAndSounds('ff')">FF
+  <li oncontextmenu="setSkinAndSounds('chimi')">Chimi
+  <li oncontextmenu="setSkinAndSounds('rpg-dying')">RPGg
+  <li oncontextmenu="setSkinAndSounds('rpg-died')">RPGr
+  <li oncontextmenu="setSkinAndSounds('rpg-night')">RPGb
+</ul>
+
+
+
+<script>
+var menu = new HTAContextMenu({
+  onload: function(ev) { playSound(eventSounds[ev.type]) },
+  globalEvents: {
+    onhighlight: function(ev) { playSound(eventSounds[ev.type]) },
+    onactivate: function(ev) { playSound(eventSounds[ev.type]) }
+  },
+
+  items: [
+    {
+      type: 'normal',
+      label: 'Normal Item1'
+    },
+    {
+      type: 'normal',
+      label: 'Normal Item2',
+      icon: {
+        text: 'ÿ',
+        fontFamily: 'WingDings'
+      }
+    },
+    { type: 'separator' },
+    {
+      type: 'submenu',
+      label: 'Submenu',
+      items: [
+        /*
+        {
+          type: "popup",
+          label: "pmenu",
+          pos: { base: "parent", posX: 'left', posY: "top-out" },
+          items: [
+            {
+              label: "popuptest",
+              type: "popup",
+              pos: { base: "item", posX: 'right-out', posY: "top" },
+              items: [
+                { label: "PPOPUPCONTENT" }
+              ]
+            },
+          ]
+        },
+        */
+        {
+          type: 'submenu',
+          label: 'Holding submenus',
+          hold: true,
+          items: [
+            { label: 'checkbox', type: 'checkbox' },
+            { type: 'separator' },
+            { label: 'radio', type: 'radio', name: 'hoge' },
+            { label: 'radio', type: 'radio', name: 'hoge' },
+            { label: 'radio', type: 'radio', name: 'hoge' },
+          ]
+        },
+        {
+          label: 'Hold Parent',
+          holdParent: true
+        },
+      ]
+    },
+    { type: 'separator' },
+    {
+      type: 'radios',
+      labels: [
+        'RadioButton1',
+        'RadioButton2',
+        'RadioButton3'
+      ]
+    },
+    { type: 'separator' },
+    {
+      type: 'checkbox',
+      label: 'Checkbox',
+      checked: true
+    },
+    { type: 'separator' },
+    {
+      type: 'submenu',
+      label: 'Internal Skins',
+      items: [{
+        type: 'radios',
+        selectedIndex: 1,
+        global: true,
+        name: 'skinradio',
+        labels: ['default', 'classic', 'xp', 'win7'],
+        onchange: function(ev) {
+          setSkinAndSounds(ev.value);
+        }
+      }]
+    },
+    {
+      type: 'submenu',
+      label: 'External Skins',
+      items: [{
+        type: 'radios',
+        global: true,
+        name: 'skinradio',
+        labels: ['rpg', 'ff', 'chimi', 'rpg-dying', 'rpg-died', 'rpg-night'],
+        onchange: function(ev) {
+          setSkinAndSounds(ev.value);
+        }
+      }]
+    },
+    { type: 'separator' },
+    {
+      label: 'Close',
+      onclick: function () {
+        menu.close();
+      }
+    }
+  ]
+});
+
+
+document.oncontextmenu = function () {
+  var ctx = event.srcElement;
+  if (!ctx || document.body === ctx) {
+    return;
+  }
+  menu.open(event.screenX, event.screenY, ctx);
+  return false;
+};
+
+
+var eventSounds = {
+  load: '',
+  activate: '',
+  highlight: ''
+};
+function setSkinAndSounds(name) {
+  eventSounds = {};
+  switch( name ) {
+    case 'rpg':
+    case 'rpg-dying':
+    case 'rpg-died':
+    case 'rpg-night':
+      menu.loadSkin('../skins/rpg/'+name+'.css');
+      eventSounds.load = '../skins/rpg/select.wav';
+      eventSounds.activate = '../skins/rpg/select.wav';
+      break;
+    case 'ff':
+      menu.loadSkin('../skins/ff/ff.css');
+      eventSounds.activate = '../skins/ff/select6.wav';
+      eventSounds.highlight = '../skins/ff/cursor2.wav';
+      break;
+    case 'chimi':
+      menu.loadSkin('../skins/chimi/chimi.css');
+      break;
+    default:
+      menu.loadSkin(name);
+      break;
+  }
+}
+
+function playSound(path) {
+  if( !path )
+    return;
+  
+  var sound = document.createElement('bgsound');
+  sound.src = path;
+  document.body.appendChild(sound);
+  
+  if( sound.childNodes.length >= 2 ) {
+    sound.removeChild(sound.firstChild);
+  }
+}
+
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,286 @@
+{
+  "tag": "TR",
+  "attr": {
+    "class": "menuitem separator"
+  },
+  "children": [
+    {
+      "tag": "TD",
+      "attr": {
+        "class": "icon icon-hidden-for-separator"
+      },
+      "children": [
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "icon-deco-box hidden"
+          },
+          "children": [
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "icon-deco-box-child1 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "icon-deco-box-child2 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "icon-deco-box-child3 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "icon-deco-box-child4 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "icon-deco-box-child5 hidden"
+              }
+            }
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "icon-deco1 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "icon-deco2 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "icon-deco3 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "icon-deco4 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "icon-deco5 hidden"
+          }
+        },
+        {
+          "tag": "DIV",
+          "attr": {
+            "class": "icon-container"
+          }
+        },
+        {
+          "tag": "DIV",
+          "attr": {
+            "class": "icon-container-alt"
+          }
+        }
+      ]
+    },
+    {
+      "tag": "TD",
+      "attr": {
+        "class": "border"
+      },
+      "children": [
+        {
+          "tag": "SPAN"
+        }
+      ]
+    },
+    {
+      "tag": "TD",
+      "attr": {
+        "class": "content separator",
+        "colspan": "4"
+      },
+      "children": [
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "content-deco-box hidden"
+          },
+          "children": [
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "content-deco-box-child1 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "content-deco-box-child2 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "content-deco-box-child3 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "content-deco-box-child4 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "content-deco-box-child5 hidden"
+              }
+            }
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "content-deco1 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "content-deco2 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "content-deco3 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "content-deco4 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "content-deco5 hidden"
+          }
+        },
+        {
+          "tag": "DIV",
+          "attr": {
+            "class": "content-container"
+          },
+          "children": [
+            {
+              "tag": "DIV",
+              "attr": {
+                "class": "hr"
+              },
+              "children": [
+                {
+                  "tag": "SPAN",
+                  "attr": {
+                    "class": "separator-deco1 hidden"
+                  }
+                },
+                {
+                  "tag": "SPAN",
+                  "attr": {
+                    "class": "separator-deco2 hidden"
+                  }
+                },
+                {
+                  "tag": "SPAN",
+                  "attr": {
+                    "class": "separator-deco3 hidden"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "arrow-deco-box hidden"
+          },
+          "children": [
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "arrow-deco-box-child1 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "arrow-deco-box-child2 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "arrow-deco-box-child3 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "arrow-deco-box-child4 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "arrow-deco-box-child5 hidden"
+              }
+            }
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "arrow-deco1 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "arrow-deco2 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "arrow-deco3 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "arrow-deco4 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "arrow-deco5 hidden"
+          }
+        }
+      ]
+    }
+  ]
+}

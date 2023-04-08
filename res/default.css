@@ -1,0 +1,118 @@
+#system---submenu-dialog-margin {
+  margin-right: -4px;
+  margin-left: 4px;
+}
+
+body {
+  background-color: ThreeDHighlight;
+}
+
+#container1 {
+  position: relative;
+  padding: 1px;
+  margin: 0px;
+
+  border: 2px outset ThreeDHighlight;
+  
+  border-collapse: collapse;
+  border-spacing: 0px;
+
+  zoom: 1;
+  background-color: ThreeDFace;
+}
+
+#container2 {
+}
+#container3 {}
+#menu-container2 {
+}
+#menu-container3 {
+}
+
+#menu-table {
+  color: WindowText;
+  font-size: x-small;
+}
+#menu-table tr {
+  padding: 0px;
+  margin: 0px;
+  border-width: 0px;
+}
+#menu-table td {
+  white-space: nowrap;
+  padding: 0px;
+}
+
+#menu-table tr.menuitem {
+  white-space: nowrap;
+}
+
+#menu-table tr.highlight {
+  background-color: highlight;
+  color: highlightText;
+}
+
+#menu-table td.icon {
+  text-align: center;
+  padding: 2px;
+  font-size: small;
+}
+
+#menu-table tr.highlight td.icon {
+  /*
+  border-right-width: 0px;
+  padding-right: 4px;
+  */
+}
+#menu-table td.content {
+  display: inline-block;
+  vertical-align: middle;
+  padding-left: 4px;
+}
+#menu-table .content-container {
+}
+#menu-table td.arrow {
+  text-align: center;
+  font-family: Webdings;
+}
+#menu-table .arrow-container {
+}
+
+#menu-table td.icon .icon-container {
+  width: 1em;
+}
+#menu-table td.content .content-container {
+}
+
+
+#menu-table tr.separator .content {
+  font-size: 1px;
+  line-height: 1px;
+  height: 1px;
+  margin: 0px;
+  padding: 0px;
+}
+#menu-table tr.separator .hr {
+  border-top: 1px solid ThreeDShadow;
+  border-bottom: 1px solid ThreeDHighlight;
+}
+
+.deco-frame {
+  display: none;
+}
+.deco-frame.top-left {
+}
+.deco-frame.top-center {
+}
+.deco-frame.top-right {
+}
+.deco-frame.middle-left {
+}
+.deco-frame.middle-right {
+}
+.deco-frame.bottom-left {
+}
+.deco-frame.bottom-center {
+}
+.deco-frame.bottom-right {
+}

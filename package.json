@@ -1,0 +1,45 @@
+{
+  "name": "hta-ctx-menu",
+  "version": "0.0.003",
+  "type": "module",
+  "description": "create real context menus for HTA (HTML Application)",
+  "main": "./dist/htactxmenu.js",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "dist-dev/**/*.js",
+    "dist-dev/**/*.d.ts"
+  ],
+  "types": "./dist/htactxmenu.d.ts",
+  "scripts": {
+    "dev": "rollup -c --watch",
+    "build": "node ./script/version.js && rollup -c",
+    "build-dev": "SET NODE_BUILD_DEV=true && rollup -c",
+    "build-res": "node ./script/html-templates-to-json.js"
+  },
+  "devDependencies": {
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-replace": "^5.0.2",
+    "@rollup/plugin-strip": "^3.0.2",
+    "@rollup/plugin-typescript": "^11.1.0",
+    "node-html-parser": "^6.1.5",
+    "rollup": "^3.20.2",
+    "rollup-plugin-cleanup": "^3.2.1",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-dts": "^5.3.0",
+    "rollup-plugin-html": "^0.2.1",
+    "tslib": "^2.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gitcobra/hta-ctx-menu.git"
+  },
+  "author": "gitcobra",
+  "license": "ISC",
+  "homepage": "https://github.com/gitcobra/hta-ctx-menu",
+  "keywords": [
+    "es3",
+    "hta",
+    "javascript"
+  ]
+}

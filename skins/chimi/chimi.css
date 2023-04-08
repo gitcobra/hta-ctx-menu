@@ -1,0 +1,864 @@
+/*
+  title: Chimi-tan skin
+  version: 0.0.00000000000000000000001
+  using icons from: https://twitter.com/_12939/status/1351831047118360576 (author: おしりまつげ 様)
+ */
+
+#system---submenu-dialog-margin {
+  margin-right: -4px;
+  margin-left: 4px;
+}
+#system---wait-afterload {}
+
+
+body {
+  background-color: black;
+}
+
+#container1 {
+  zoom: 1;
+  position: relative;
+}
+
+/* child menu load transition */
+body.trans-to-load #container1 {
+  filter: progid:DXImageTransform.Microsoft.Iris(irisstyle=CIRCLE, motion=out, duration=0.3);
+}
+/* root menu load transition */
+.layer-1 body.trans-to-load #container1 {
+  filter: progid:DXImageTransform.Microsoft.Iris(irisstyle=STAR, motion=out, duration=0.5);
+}
+body #container2 {
+  position: relative;
+  zoom: 1;
+  height: 100%;
+  visibility: hidden;
+}
+body.load #container2 {
+  visibility: visible;
+}
+
+
+
+/*
+  background-image
+*/
+#container3 {
+  background: url(./parts/bg.gif) repeat top left;
+}
+.index-odd #container3 {
+  background-position: bottom right;
+}
+.index-even #container3 {
+  background-position: center left;
+}
+.index-0 #container3 {
+  background-position: top left;
+}
+
+
+
+
+
+
+
+/*
+  Chimi icon getting in the right bottom corner
+*/
+#container3-deco5 {
+  z-index: 1;
+  position: absolute;
+  
+  width: 180px;
+  height: 100px;
+  right: -100px;
+  bottom: 0px;
+  background: none no-repeat left bottom;
+}
+.load #container3-deco5 {
+  display: inline-block;
+}
+.rnd50-odd .afterload #container3-deco5 {
+  background-image: url(./icons/chr02.gif);
+}
+.rnd50-even .afterload #container3-deco5 {
+  background-image: url(./icons/chr03.gif);
+}
+.rnd50-multi3 .afterload #container3-deco5 {
+  background-image: url(./icons/chr04.gif);
+}
+.rnd50-multi4 .afterload #container3-deco5 {
+  background-image: url(./icons/chr05.gif);
+}
+.rnd50-multi5 .afterload #container3-deco5 {
+  background-image: url(./icons/chr06.gif);
+}
+.rnd50-multi6 .afterload #container3-deco5 {
+  background-image: url(./icons/chr07.gif);
+}
+.rnd50-multi7 .afterload #container3-deco5 {
+  background-image: url(./icons/chr01.gif);
+}
+.rnd50-multi8 .afterload #container3-deco5 {
+  background-image: url(./icons/chr08.gif);
+}
+.rnd50-multi9 .afterload #container3-deco5 {
+  background-image: url(./icons/chr09.gif);
+}
+.rnd50-multi10 .afterload #container3-deco5 {
+  background-image: url(./icons/chr10.gif);
+}
+.rnd50-multi11 .afterload #container3-deco5 {
+  background-image: url(./icons/chr11.gif);
+}
+.rnd50-multi12 .afterload #container3-deco5 {
+  background-image: url(./icons/chr12.gif);
+}
+.rnd50-multi13 .afterload #container3-deco5 {
+  background-image: url(./icons/chr13.gif);
+}
+.rnd50-multi14 .afterload #container3-deco5 {
+  background-image: url(./icons/chr14.gif);
+}
+.rnd50-multi15 .afterload #container3-deco5 {
+  background-image: url(./icons/chr15.gif);
+}
+.rnd50-multi16 .afterload #container3-deco5 {
+  background-image: url(./icons/chr16.gif);
+}
+.rnd50-multi17 .afterload #container3-deco5 {
+  background-image: url(./icons/chr17.gif);
+}
+.rnd50-multi18 .afterload #container3-deco5 {
+  background-image: url(./icons/chr18.gif);
+}
+.rnd50-multi19 .afterload #container3-deco5 {
+  background-image: url(./icons/chr19.gif);
+}
+.rnd50-multi20 .afterload #container3-deco5 {
+  background-image: url(./icons/chr20.gif);
+}
+.rnd50-multi21 .afterload #container3-deco5 {
+  background-image: url(./icons/chr21.gif);
+}
+.rnd50-multi22 .afterload #container3-deco5 {
+  background-image: url(./icons/chr22.gif);
+}
+.rnd50-multi23 .afterload #container3-deco5 {
+  background-image: url(./icons/chr23.gif);
+}
+.rnd50-multi24 .afterload #container3-deco5 {
+  background-image: url(./icons/chr24.gif);
+}
+.rnd50-multi25 .afterload #container3-deco5 {
+  background-image: url(./icons/chr25.gif);
+}
+/* Chimi getting in */
+.trans-to-afterload #container3-deco5, body.trans-from-open #container3-deco5 {
+  filter:
+    progid:DXImageTransform.Microsoft.Slide(slideStyle=push, duration=0.4)
+    ;
+}
+/* Chimi getting out */
+body.trans-to-open #container3-deco5 {
+  filter:
+    progid:DXImageTransform.Microsoft.Stretch(stretchStyle=push, duration=0.4)
+    ;
+}
+.layer body.open #container3-deco5 {
+  background-image: none;
+}
+
+
+
+
+
+
+/*
+  main menu table
+*/
+#menu-container1 {
+  position: relative;
+  height: 100%;
+}
+#menu-container3 {
+  position: relative;
+  z-index: 3;
+}
+
+
+#menu-table {
+  z-index: 5;
+  color: black;
+  font-family: "HGP創英角ﾎﾟｯﾌﾟ体", "Arial Black";
+  font-weight: bolder;
+  font-size: medium;
+  overflow: visible;
+}
+/*
+  icon settings
+ */
+#menu-table td.icon {
+  padding: 2px;
+  z-index: 10;
+  position: relative;
+  width: auto;
+  text-align: center;
+  padding-right: 1px;
+  height: 22px;
+}
+/*
+  Chimi cursor icon
+*/
+#menu-table tr.menuitem td.icon .icon-deco-box {
+  zoom: 1;
+  display: inline-block;
+  position: absolute;
+  width: 130px;
+  height: 44px;
+  left: -55px;
+  top: -6px;
+  z-index: 10;
+}
+#menu-table tr.trans-to-highlight td.icon .icon-deco-box {
+  filter:
+    progid:DXImageTransform.Microsoft.Shadow(Strength=1, direction=225, Color=#010101)
+    progid:DXImageTransform.Microsoft.Stretch(duration=0.2, bands=1, stretchStyle=push);
+}
+#menu-table tr.trans-from-highlight td.icon .icon-deco-box {
+  filter:
+    progid:DXImageTransform.Microsoft.Shadow(Strength=1, direction=225, Color=#010101)
+    progid:DXImageTransform.Microsoft.MotionBlur(Strength=10, direction=90, Color=black, Add=0)
+    progid:DXImageTransform.Microsoft.Slide(duration=0.5);
+}
+#menu-table tr.menuitem td.icon .icon-deco-box-child1 {
+  display: inline-block;
+  position: absolute;
+  width: 130px;
+  height: 44px;
+  left: 0px;
+  top: 0px;
+  background: url(./parts/blank.gif) no-repeat 40px center;
+  visibility: hidden;
+}
+.afterload #menu-table tr.highlight td.icon .icon-deco-box-child1 {
+  visibility: visible;
+}
+
+#menu-table tr.trans-from-highlight td.icon .icon-deco-box-child1 {
+  background-position: 30px center;
+}
+
+#menu-table tr.menuitem-odd td.content {
+  color: #9aff49;
+}
+#menu-table tr.menuitem-odd td.icon .icon-deco-box-child1 {
+  background-image: url(./parts/cursor_01.gif);
+}
+#menu-table tr.menuitem-even td.content {
+  color: #fed359;
+}
+#menu-table tr.menuitem-even td.icon .icon-deco-box-child1 {
+  background-image: url(./parts/cursor_02.gif);
+}
+#menu-table tr.menuitem-multi3 td.content {
+  color: #4afff8;
+}
+#menu-table tr.menuitem-multi3 td.icon .icon-deco-box-child1 {
+  background-image: url(./parts/cursor_03.gif);
+}
+#menu-table tr.menuitem-multi4 td.icon .icon-deco-box-child1 {
+  background-image: url(./parts/cursor_04.gif);
+}
+#menu-table tr.menuitem-multi5 td.content {
+  color: #ffb3e2;
+}
+#menu-table tr.menuitem-multi5 td.icon .icon-deco-box-child1 {
+  background-image: url(./parts/cursor_05.gif);
+}
+#menu-table tr.menuitem-multi6 td.content {
+  color: #fd9e89;
+}
+#menu-table tr.menuitem-multi6 td.icon .icon-deco-box-child1 {
+  background-image: url(./parts/cursor_06.gif);
+}
+#menu-table tr.menuitem-multi7 td.icon .icon-deco-box-child1 {
+  background-image: url(./parts/cursor_07.gif);
+}
+#menu-table tr.menuitem-multi8 td.icon .icon-deco-box-child1 {
+  background-image: url(./parts/cursor_08.gif);
+}
+
+/*
+  content 
+*/
+#menu-table td.content {
+  padding-left: 2px;
+  position: relative;
+}
+#menu-table td.content .content-container {
+  padding: 2px;
+  padding-left: 4px;
+  zoom: 1;
+}
+.afterload #menu-table tr.menuitem td.content .content-container {
+  filter:
+    DropShadow(enabled=true, OffX=0, OffY=-1, Color=black)
+    DropShadow(enabled=true, OffX=0, OffY=1, Color=black)
+    DropShadow(enabled=true, OffX=1, OffY=0, Color=black)
+    DropShadow(enabled=true, OffX=-1, OffY=0, Color=black)
+    ;
+}
+
+#menu-table tr.highlight {
+  background-color: transparent;
+  background-image: url(./parts/blank.gif);
+}
+
+.afterload #menu-table tr.highlight td.content .content-container {
+  /*color: #FFFF00;*/
+  filter:
+    DropShadow(enabled=1, OffX=0, OffY=-2, Color=#111111)
+    DropShadow(enabled=1, OffX=2, OffY=0, Color=#111111)
+    DropShadow(enabled=1, OffX=-2, OffY=0, Color=#111111)
+    DropShadow(enabled=1, OffX=0, OffY=2, Color=#111111)
+    /*Glow(enabled=1, Color=#000000, Strength=1)*/
+    ;
+}
+
+/*
+  activate contents
+*/
+.afterload #menu-table tr.activate td.content {
+  color: #FFFFFF;
+}
+.afterload #menu-table tr.trans-to-activate td.content .content-container {
+  filter:
+    DropShadow(enabled=1, OffX=0, OffY=-2, Color=#111111)
+    DropShadow(enabled=1, OffX=2, OffY=0, Color=#111111)
+    DropShadow(enabled=1, OffX=-2, OffY=0, Color=#111111)
+    DropShadow(enabled=1, OffX=0, OffY=2, Color=#111111)
+    DropShadow(enabled=0, OffX=-1, OffY=-1, Color=#FFBBAA)
+    DropShadow(enabled=0, OffX=0, OffY=-1, Color=#FFBBAA)
+    DropShadow(enabled=0, OffX=1, OffY=-1, Color=#FFBBAA)
+    DropShadow(enabled=0, OffX=1, OffY=0, Color=#FFBBAA)
+    DropShadow(enabled=0, OffX=-1, OffY=0, Color=#FFBBAA)
+    DropShadow(enabled=0, OffX=-1, OffY=1, Color=#FFBBAA)
+    DropShadow(enabled=0, OffX=0, OffY=1, Color=#FFBBAA)
+    DropShadow(enabled=0, OffX=1, OffY=1, Color=#FFBBAA)
+    Glow(enabled=0, Color=#FFFFFF, Strength=4)
+    progid:DXImageTransform.Microsoft.Fade(duration=0.3)
+    _flip()
+    ;
+}
+.afterload #menu-table tr.trans-from-activate td.content .content-container {
+  filter:
+    DropShadow(enabled=1, OffX=-1, OffY=-1, Color=#FFBBAA)
+    DropShadow(enabled=1, OffX=0, OffY=-1, Color=#FFBBAA)
+    DropShadow(enabled=1, OffX=1, OffY=-1, Color=#FFBBAA)
+    DropShadow(enabled=1, OffX=1, OffY=0, Color=#FFBBAA)
+    DropShadow(enabled=1, OffX=-1, OffY=0, Color=#FFBBAA)
+    DropShadow(enabled=1, OffX=-1, OffY=1, Color=#FFBBAA)
+    DropShadow(enabled=1, OffX=0, OffY=1, Color=#FFBBAA)
+    DropShadow(enabled=1, OffX=1, OffY=1, Color=#FFBBAA)
+    DropShadow(enabled=0, OffX=0, OffY=-1, Color=black)
+    DropShadow(enabled=0, OffX=0, OffY=1, Color=black)
+    DropShadow(enabled=0, OffX=1, OffY=0, Color=black)
+    DropShadow(enabled=0, OffX=-1, OffY=0, Color=black)
+    Glow(enabled=1, Color=#FFFFFF, Strength=4)
+    progid:DXImageTransform.Microsoft.Fade(duration=0.4)
+    _flip()
+    ;
+}
+
+
+
+
+
+/*
+  background large character
+*/
+.layer-1 #container3-deco1 {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: inline-block;
+  left: 0px;
+  top: 0px;
+  zoom: 1;
+}
+.layer-1 .afterload #container3-deco1 {
+  filter: Alpha(opacity=90);
+}
+.rnd50-odd #container3-deco1 {
+  background: url(./large/hamster.gif) no-repeat center center;
+}
+.rnd50-even #container3-deco1 {
+  background: url(./large/cat.gif) no-repeat center center;
+}
+.rnd50-multi3 #container3-deco1 {
+  background: url(./large/cat2.gif) no-repeat center center;
+}
+.rnd50-multi4 #container3-deco1 {
+  background: url(./large/cat3.gif) no-repeat center center;
+}
+.rnd50-multi5 #container3-deco1 {
+  background: url(./large/kiss.gif) no-repeat center center;
+}
+.rnd50-multi6 #container3-deco1 {
+  background: url(./large/pet.gif) no-repeat center center;
+}
+.rnd50-multi7 #container3-deco1 {
+  background: url(./large/usagi.gif) no-repeat center center;
+}
+.rnd50-multi8 #container3-deco1 {
+  background: url(./large/ribbon.gif) no-repeat center center;
+}
+.rnd50-multi9 #container3-deco1 {
+  background: url(./large/inu2.gif) no-repeat center center;
+}
+.rnd50-multi10 #container3-deco1 {
+  background: url(./large/inu.gif) no-repeat center center;
+}
+.rnd50-multi11 #container3-deco1 {
+  background: url(./large/bath.gif) no-repeat center center;
+}
+.rnd50-multi12 #container3-deco1 {
+  background: url(./large/bikini.gif) no-repeat center center;
+}
+.rnd50-multi13 #container3-deco1 {
+  background: url(./large/bond.gif) no-repeat center center;
+}
+.rnd50-multi14 #container3-deco1 {
+  background: url(./large/bread.gif) no-repeat center center;
+}
+.rnd50-multi15 #container3-deco1 {
+  background: url(./large/bread2.gif) no-repeat center center;
+}
+.rnd50-multi16 #container3-deco1 {
+  background: url(./large/fish.gif) no-repeat center center;
+}
+.rnd50-multi17 #container3-deco1 {
+  background: url(./large/futon.gif) no-repeat center center;
+}
+.rnd50-multi18 #container3-deco1 {
+  background: url(./large/himawari.gif) no-repeat center center;
+}
+.rnd50-multi19 #container3-deco1 {
+  background: url(./large/mask.gif) no-repeat center center;
+}
+.rnd50-multi20 #container3-deco1 {
+  background: url(./large/medamayaki.gif) no-repeat center center;
+}
+.rnd50-multi21 #container3-deco1 {
+  background: url(./large/medamayaki2.gif) no-repeat center center;
+}
+.rnd50-multi22 #container3-deco1 {
+  background: url(./large/ramen.gif) no-repeat center center;
+}
+.rnd50-multi23 #container3-deco1 {
+  background: url(./large/suica.gif) no-repeat center center;
+}
+.rnd50-multi24 #container3-deco1 {
+  background: url(./large/twitter.gif) no-repeat center center;
+}
+.rnd50-multi25 #container3-deco1 {
+  background: url(./large/ribbon2.gif) no-repeat center center;
+}
+
+
+/*
+  show various charactors
+*/
+/* top right corner */
+.rnd10-multi3 #menu-container1-deco1, .rnd10-multi5 #menu-container1-deco1 {
+  display: inline-block;
+  position: absolute;
+}
+.layer-1 .trans-to-afterload #menu-container1-deco1 {
+  width: 110px;
+  height: 100px;
+  right: 0px;
+  top: -30px;
+  filter:
+    Alpha(opacity=70)
+    Glow(Color=#FFeedd, Strength=32)
+    progid:DXImageTransform.Microsoft.fade(duration=0.8)
+    progid:DXImageTransform.Microsoft.slide(slideStyle=push, duration=0.6);
+}
+.rnd10-multi3 .afterload #menu-container1-deco1 {
+  background: url(./icons/star.gif) no-repeat center 36px;
+}
+.rnd10-multi5 .afterload #menu-container1-deco1 {
+  background: url(./icons/bee.gif) no-repeat center 36px;
+}
+
+/* top left */
+.rnd10-multi4 #menu-container1-deco2, .rnd10-multi7 #menu-container1-deco2 {
+  display: inline-block;
+  position: absolute;
+}
+.layer-1 .trans-to-afterload #menu-container1-deco2 {
+  width: 80px;
+  height: 100px;
+  left: 0px;
+  top: 10px;
+  filter:
+    Alpha(opacity=70)
+    progid:DXImageTransform.Microsoft.fade(duration=0.8)
+}
+.rnd10-multi4 .afterload #menu-container1-deco2 {
+  background: url(./icons/usagi3.gif) no-repeat center center;
+}
+.rnd10-multi7 .afterload #menu-container1-deco2 {
+  background: url(./icons/unicorn.gif) no-repeat center 36px;
+}
+
+/* bottom left */
+.rnd10-multi2 .trans-to-afterload #menu-container1-deco3 {
+  display: inline-block;
+  position: absolute;
+}
+.layer-1 .trans-to-afterload #menu-container1-deco3 {
+  width: 80px;
+  height: 80px;
+  left: 0px;
+  bottom: 0px;
+  filter:
+    Alpha(opacity=70)
+    progid:DXImageTransform.Microsoft.fade(duration=0.8)
+}
+.rnd10-multi3 .afterload #menu-container1-deco3 {
+  background: url(./icons/shortcake.gif) no-repeat center center;
+}
+.rnd10-odd .afterload #menu-container1-deco3 {
+  background: url(./icons/rainbow.gif) no-repeat center center;
+}
+.rnd10-multi3 .afterload #menu-container1-deco3 {
+  background: none no-repeat center 36px;
+}
+
+
+
+
+
+
+
+
+/*  
+  balloon's right needle
+*/
+html.child-right-out #menu-table tr.trans-to-open td.arrow .arrow-deco1, html.child-right-out #menu-table tr.trans-from-open td.arrow .arrow-deco1 {
+  display: inline-block;
+  z-index: 2;
+  position: absolute;
+  left: 26px;
+  top: 4px;
+  width: 16px;
+  height: 24px;
+  background: none no-repeat left top;
+  filter:
+    progid:DXImageTransform.Microsoft.Fade(duration=0.8)
+    ;
+}
+html.child-right-out #menu-table tr.open td.arrow .arrow-deco1 {
+  background-image: url(./parts/needle-balloon.gif);
+}
+/*
+  left needle
+*/
+html.child-left-out body #menu-table tr.trans-to-open td.icon .icon-deco1, html.child-left-out body #menu-table tr.trans-from-open td.icon .icon-deco1 {
+  display: inline-block;
+  z-index: 22;
+  position: absolute;
+  left: -10px;
+  top: 4px;
+  width: 16px;
+  height: 24px;
+  background: none no-repeat left top;
+  filter:
+    progid:DXImageTransform.Microsoft.Fade(duration=0.8)
+    ;
+}
+html.child-left-out body #menu-table tr.open td.icon .icon-deco1 {
+  background-image: url(./parts/needle-balloon-left.gif);
+}
+
+/*
+  stems of the balloon's needle in child dialog
+*/
+html.right-out body #menu-container2-deco1 {
+  display: inline-block;
+  z-index: 2;
+  position: absolute;
+  font-size: 1px;
+  left: -19px;
+  top: 4px;
+  width: 16px;
+  height: 24px;
+  background-image: url(./parts/needle-balloon.gif);
+}
+html.left-out body #menu-container2-deco1 {
+  display: inline-block;
+  z-index: 2;
+  position: absolute;
+  font-size: 1px;
+  right: -19px;
+  top: 4px;
+  width: 16px;
+  height: 24px;
+  background-image: url(./parts/needle-balloon-left.gif);
+}
+html.bottom body #menu-container2-deco1 {
+  top: auto;
+  bottom: 4px;
+}
+
+
+
+
+
+
+
+/*
+  custom checkboxes and radios
+*/
+#menu-table .icon .icon-container {
+  text-align: center;
+  margin-left: 45px;
+  height: 22px;
+  line-height: 22px;
+}
+#menu-table .icon .icon-container-alt {
+  display: none;
+  margin-left: 40px;
+  width: 42px;
+  height: 32px;
+  background: none no-repeat center center;
+}
+#menu-table tr.checkable td.icon .icon-container {
+  display: none;
+}
+#menu-table tr.checkable td.icon .icon-container-alt {
+  display: inline-block;
+}
+/*
+  radio
+*/
+/* unchecekd */ 
+#menu-table tr.radio .icon-container-alt {
+  background-image: url(./parts/radio_0.gif);
+}
+.afterload #menu-table tr.radio .icon-container-alt {
+  filter:
+    DropShadow(enabled=1, OffX=0, OffY=-1, Color=#FFF0F0)
+    DropShadow(enabled=1, OffX=0, OffY=1, Color=#FFF0F0)
+    DropShadow(enabled=1, OffX=1, OffY=0, Color=#FFF0F0)
+    DropShadow(enabled=1, OffX=-1, OffY=0, Color=#FFF0F0)
+    ;
+}
+/* checked */
+#menu-table tr.radio-checked .icon-container-alt {
+  background-image: url(./parts/radio_1.gif);
+}
+
+.afterload #menu-table tr.trans-to-radio-checked .icon-container-alt {
+  filter:
+    DropShadow(enabled=1, OffX=0, OffY=-1, Color=#FFFFCC)
+    DropShadow(enabled=1, OffX=0, OffY=1, Color=#FFFFCC)
+    DropShadow(enabled=1, OffX=1, OffY=0, Color=#FFFFCC)
+    DropShadow(enabled=1, OffX=-1, OffY=0, Color=#FFFFCC)
+    Glow(enabled=false, Color=yellow, Strength=3)
+    progid:DXImageTransform.Microsoft.Fade(duration=0.3)
+    _flip()
+    ;
+}
+.afterload #menu-table tr.trans-from-radio-checked .icon-container-alt {
+  filter:
+    DropShadow(enabled=0, OffX=0, OffY=-1, Color=#FFF0F0)
+    DropShadow(enabled=0, OffX=0, OffY=1, Color=#FFF0F0)
+    DropShadow(enabled=0, OffX=1, OffY=0, Color=#FFF0F0)
+    DropShadow(enabled=0, OffX=-1, OffY=0, Color=#FFF0F0)
+    Glow(enabled=true, Color=yellow, Strength=3)
+    progid:DXImageTransform.Microsoft.Fade(duration=0.3)
+    _flip()
+    ;
+}
+
+
+/*checkbox*/
+#menu-table tr.checkbox-checked .icon-container-alt {
+  background-image: url(./parts/check.gif);
+}
+.afterload #menu-table tr.checkbox-checked .icon-container-alt {
+  filter:Glow(enabled=true, Color=white, Strength=5);
+}
+.afterload #menu-table tr.trans-to-checkbox-checked .icon-container-alt {
+  filter:
+    Glow(enabled=false, Color=white, Strength=5)
+    progid:DXImageTransform.Microsoft.Fade(duration=0.3)
+    _flip()
+    ;
+}
+.afterload #menu-table tr.trans-from-checkbox-checked .icon-container-alt {
+  filter:
+    Glow(enabled=true, Color=white, Strength=5)
+    progid:DXImageTransform.Microsoft.Fade(duration=0.3)
+    _flip()
+    ;
+}
+
+
+
+
+/*
+  arrows
+*/
+body #menu-table tr.highlight td.arrow {
+  overflow: visible;
+}
+body #menu-table tr.trans-to-open td.arrow .arrow-container-alt {
+  filter:
+    DropShadow(enabled=0, OffX=0, OffY=-1, Color=#FFF0F0)
+    DropShadow(enabled=0, OffX=0, OffY=1, Color=#FFF0F0)
+    DropShadow(enabled=0, OffX=1, OffY=0, Color=#FFF0F0)
+    DropShadow(enabled=0, OffX=-1, OffY=0, Color=#FFF0F0)
+    Glow(enabled=0, Color=#FFcccc, Strength=4)
+
+    progid:DXImageTransform.Microsoft.Fade(duration=0.4)
+    _flip()
+    ;
+}
+body #menu-table tr.trans-from-open td.arrow .arrow-container-alt {
+  filter:
+    DropShadow(enabled=1, OffX=0, OffY=-1, Color=#FFF0F0)
+    DropShadow(enabled=1, OffX=0, OffY=1, Color=#FFF0F0)
+    DropShadow(enabled=1, OffX=1, OffY=0, Color=#FFF0F0)
+    DropShadow(enabled=1, OffX=-1, OffY=0, Color=#FFF0F0)
+    Glow(enabled=1, Color=#FFcccc, Strength=4)
+
+    progid:DXImageTransform.Microsoft.Fade(duration=0.7)
+    _flip()
+    ;
+}
+
+#menu-table tr.submenu td.arrow .arrow-container {
+  display: none;
+}
+#menu-table tr.submenu td.arrow {
+  position: relative;
+  padding: 2px 16px;
+  width: auto;
+  text-align: center;
+  height: 32px;
+}
+#menu-table td.arrow .arrow-container-alt {
+  position: absolute;
+  left: -1px;
+  top: -2px;
+  display: inline-block;
+  font-size: 1px;
+  width: 32px;
+}
+#menu-table tr.submenu td.arrow .arrow-container-alt {
+  display: inline-block;
+  font-size: 1px;
+  width: 34px;
+  height: 34px;
+  background: url(./parts/arrow.gif) no-repeat center center;
+}
+
+
+
+/*
+  separators
+*/
+#menu-table tr.separator td.content {
+  position: relative;
+  padding: 0px 14px 0px 18px;
+}
+body #menu-table tr.separator td.content {
+  filter: none;
+}
+#menu-table tr.separator .hr {
+  z-index: 0;
+  position: relative;
+  border-width: 0px;
+  height: 12px;
+  background-image: url(./parts/horizon.gif);
+}
+/*
+#menu-table tr.separator .hr .separator-deco2 {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: -8px;
+  left: -10px;
+  background-image: url(./sep-left.gif);
+}
+*/
+#menu-table tr.separator .hr .separator-deco3 {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background-image: url(./parts/sep-right.gif);
+}
+
+
+
+
+/*
+  frame
+*/
+#deco-frame {
+  z-index: 5;
+  position: relative;
+}
+#deco-frame .deco-frame-parts {
+  display: inline-block;
+  font-size: 1px;
+}
+#deco-frame #frame-top-left-deco1 {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-image: url(./parts/top-left.gif);
+}
+#deco-frame #frame-top-center-cell {
+  background-image: url(./parts/horizon-top.gif);
+}
+#deco-frame #frame-top-right-deco1 {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-image: url(./parts/top-right.gif);
+}
+#deco-frame #frame-middle-left-cell {
+  background-image: url(./parts/vertical-left.gif);
+}
+#deco-frame #frame-middle-right-cell {
+  background-image: url(./parts/vertical-right.gif);
+}
+#deco-frame #frame-bottom-left-deco1 {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-image: url(./parts/bottom-left.gif);
+}
+#deco-frame #frame-bottom-center-cell {
+  background-image: url(./parts/horizon-bottom.gif);
+}
+#deco-frame #frame-bottom-right-deco1 {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-image: url(./parts/bottom-right.gif);
+}
+
+
+
+

@@ -1,0 +1,69 @@
+#system---submenu-dialog-margin {
+  margin-right: -4px;
+  margin-left: 4px;
+}
+
+body {
+  position: relative;
+  background-color: rgb(255, 255, 255);
+}
+
+#container1 {
+  position: relative;
+  zoom: 1;
+  padding: 2px;
+  border: 1px solid rgb(172, 168, 153);
+  background-color: rgb(255, 255, 255);
+}
+#menu-table {
+  color: rgb(0, 0, 0);
+  font-size: x-small;
+  font-family: Tahoma;
+}
+
+body.trans-to-load #container1 {
+  filter: progid:DXImageTransform.Microsoft.Fade(duration=0.3);
+  position: relative;
+}
+#container2 {
+  visibility: hidden;
+}
+body.load #container2 {
+  visibility: visible;
+}
+
+#menu-table tr.highlight {
+  background-color: rgb(49, 106, 197);
+  color: rgb(255, 255, 255);
+}
+
+#menu-table td.icon {
+  text-align: center;
+  padding: 2px;
+  font-size: x-small;
+}
+
+#menu-table td.content {
+  padding-left: 0px;
+}
+#menu-table td.arrow {
+  text-align: center;
+  font-family: Webdings;
+  padding-left: 0.6em;
+}
+#menu-table td.icon .icon-container {
+  width: 1em;
+}
+
+#menu-table tr.separator .content {
+  font-size: 1px;
+  line-height: 1px;
+  height: 1px;
+  margin: 0px;
+  padding: 0px;
+}
+#menu-table tr.separator .hr {
+  border-top: 1px solid rgb(172, 168, 153);
+  border-bottom: 1px solid rgb(255, 255, 255);
+  margin: 2px 0px;
+}

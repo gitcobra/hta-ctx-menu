@@ -1,0 +1,88 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=5">
+<style>
+
+* {
+	padding: 0px;
+	margin: 0px;
+	border-width: 0px;
+}
+
+*html {
+	font-size: 30px;
+}
+
+#container {
+	display: inline-block;
+	position: relative;
+	height: 100%;
+}
+
+#menu-table {
+	color: WindowText;
+}
+#menu-table td {
+	white-space: nowrap;
+}
+#menu-table tr.menuitem-highlight {
+	background-color: highlight;
+	color: highlightText;
+}
+
+#menu-table tr.separator td {
+	font-size: 1px;
+}
+#menu-table tr.separator .hr {
+  border-top: 1px solid ThreeDShadow;
+  border-bottom: 1px solid ThreeDLightShadow;
+}
+#menu-table tr.separator td.icon-hidden-for-separator {
+	display: none;
+}
+
+#menu-table td.icon {
+	text-align: center;
+}
+#menu-table td.icon .icon-container-alt {
+	display: none;
+}
+
+#menu-table td.border {
+	display: none;
+	font-size: 1px;
+}
+#menu-table td.border .border-container {
+	font-size: 1px;
+}
+
+
+
+#menu-table td.content {
+	display: inline-block;
+}
+#menu-table td.arrow {
+	text-align: center;
+}
+#menu-table td.arrow .arrow-container {
+	width: 1em;
+	font-size: x-small;
+}
+#menu-table td.arrow .arrow-container-alt {
+	display: none;
+}
+
+#deco-frame-table .df-tbl-parts {
+	display: none;
+}
+.hidden {
+	display: none;
+}
+</style>
+</head>
+
+
+<!-- don'T set CSS rules that affect layout (such as border, padding, position, etc) to the BODY (or HTML) element. they will skew the calculation of the dialog size. -->
+<body onkeydown="return false"></body>
+
+</html>

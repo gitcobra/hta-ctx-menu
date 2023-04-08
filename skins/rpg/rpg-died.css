@@ -1,0 +1,224 @@
+#system---submenu-dialog-margin {
+  margin-right: -8px;
+  margin-left: 8px;
+}
+#system---tweak-animated-gif-suffix {}
+
+
+#container1, #container2 {
+  zoom: 1;
+  position: relative;
+}
+body {
+  background-color: #010101;
+}
+body.trans-to-load #container1 {
+  FILTER: progid:DXImageTransform.Microsoft.Blinds(Bands=1,direction=down,duration=0.3);
+}
+body.trans-to-load #container2 {
+  visibility: hidden;
+}
+body.load #container2 {
+  visibility: visible;
+}
+#menu-container1 {
+  padding: 8px 0px;
+}
+
+#menu-table {
+  color: #ff7830; /* normal:ffffff night:60a0ff dying:70f040 died:ff7830 */
+  font-family: "Small Fonts";
+  font-size: 1em;
+}
+#menu-table tr.highlight {
+  background-color: transparent;
+}
+#menu-table tr.highlight td.icon {
+  background: url(./died/cursor.gif) no-repeat 8px center;
+}
+.topmost body #menu-table tr.highlight td.icon {
+  background: url(./died/cursor-a.gif?) no-repeat 8px center;
+}
+
+
+#menu-table td.icon {
+  width: 32px;
+  text-align: center;
+  padding-left: 24px;
+  padding-right: 2px;
+}
+#menu-table td.icon .icon-container {
+  width: auto;
+  font-family: Wingdings;
+  text-align: center;
+}
+
+/* alternative checkbox and radio icons */
+#menu-table tr.checkable .icon-container {
+  display: none;
+}
+#menu-table tr.checkable .icon-container-alt {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  font-size: 1px;
+}
+
+/*checkbox*/
+#menu-table tr.checkbox .icon-container-alt {
+  width: 8px;
+  height: 8px;
+  font-size: 1px;
+  margin: 1px 4px
+}
+#menu-table tr.checkbox .checked .icon-container-alt {
+  background-image: url(./died/equip.gif);
+}
+#menu-table tr.checkbox .unchecked .icon-container-alt {
+}
+/*radio*/
+#menu-table tr.radio .checked .icon-container-alt {
+  background-image: url(./died/kome.gif);
+  width: 8px;
+  height: 8px;
+}
+#menu-table tr.radio .unchecked .icon-container-alt {
+  background-image: url(./died/blank.gif);
+}
+
+#menu-table tr.submenu td.arrow .arrow-container {
+  display: none;
+}
+#menu-table tr.submenu td.arrow {
+  padding:2px 4px 2px 8px;
+  vertical-align: bottom;
+}
+#menu-table tr.submenu td.arrow .arrow-container-alt {
+  display: inline-block;
+  font-size: 1px;
+  width: 8px;
+  height: 8px;
+  background-image: url(./died/cursor-down.gif);
+}
+#menu-table tr.open td.arrow .arrow-container-alt {
+  background-image: url(./died/cursor-down-a.gif?);
+}
+
+
+#menu-table tr.separator .hr {
+  margin: 4px 0px 6px;
+  font-size: 1px;
+  line-height: 1px;
+  border-width: 0px;
+  width: 100%;
+  height: 8px;
+  background-image: url(./died/horizon.gif);
+}
+#menu-table tr.separator td.content {
+  position: relative;
+}
+#menu-table tr.separator .hr {
+  padding: 0px;
+  position: relative;
+}
+#menu-table tr.separator .separator-deco1 {
+  display: inline-block;
+  font-size: 1px;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  left: -8px;
+  top: 0px;
+  background-image: url(./died/bottom-left.gif);
+}
+#menu-table tr.separator .separator-deco3 {
+  display: inline-block;
+  font-size: 1px;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  right: -8px;
+  top: 0px;
+  background-image: url(./died/bottom-right.gif);
+}
+#menu-table tr.custom-separator-top .separator-deco1 {
+  display: inline-block;
+  font-size: 1px;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  left: -8px;
+  top: 0px;
+  background-image: url(./died/top-left.gif);
+}
+#menu-table tr.custom-separator-top .separator-deco3 {
+  display: inline-block;
+  font-size: 1px;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  right: -8px;
+  top: 0px;
+  background-image: url(./died/top-right.gif);
+}
+
+
+
+
+
+
+
+
+
+
+#deco-frame .deco-frame-parts {
+  display: block;
+  font-size: 1px;
+}
+#deco-frame #frame-top-left-deco1 {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-image: url(./died/top-left.gif);
+}
+#deco-frame #frame-top-center-cell {
+  height: 8px;
+  background-image: url(./died/horizon.gif);
+  font-size: 1px;
+}
+#deco-frame #frame-top-right-deco1 {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-image: url(./died/top-right.gif);
+}
+#deco-frame #frame-middle-left-cell {
+  width: 8px;
+  height: 100%;
+  background-image: url(./died/vertical.gif);
+}
+#deco-frame #frame-middle-right-cell {
+  width: 8px;
+  height: 100%;
+  background-image: url(./died/vertical.gif);
+}
+#deco-frame #frame-bottom-left-deco1 {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-image: url(./died/bottom-left.gif);
+}
+#deco-frame #frame-bottom-center-cell {
+  display: inline-block;
+  width: 100%;
+  height: 8px;
+  background-image: url(./died/horizon.gif);
+}
+#deco-frame #frame-bottom-right-deco1 {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-image: url(./died/bottom-right.gif);
+}
+
+

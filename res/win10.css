@@ -1,0 +1,70 @@
+#system---submenu-dialog-margin {
+  margin-right: -4px;
+  margin-left: 4px;
+}
+
+#container1 {
+  background-color: rgb(238, 238, 238);
+  zoom: 1;
+}
+body.trans-to-load #container1 {
+  filter: progid:DXImageTransform.Microsoft.Fade(duration=0.3);
+}
+body.trans-to-load #menu-table {
+  visibility: hidden;
+}
+body.load #menu-table {
+  visibility: visible;
+}
+
+
+#container2 {
+  padding: 4px 2px;
+  border: 1px solid rgb(160, 160, 160);
+}
+
+#menu-table {
+  color: rgb(0, 0, 0);
+  font-size: x-small;
+  font-family:Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#menu-table tr.highlight {
+  color: rgb(0, 0, 0);
+  background-color: rgb(255, 255, 255);
+}
+
+#menu-table td.icon {
+  text-align: center;
+  padding: 2px;
+  font-size: small;
+}
+
+#menu-table td.icon .icon-container {
+  width: 1.5em;
+}
+
+#menu-table td.content {
+  padding-left: 2px;
+}
+#menu-table td.arrow {
+  text-align: center;
+  font-family: Webdings;
+  padding-right: 8px;
+  padding-left: 0.6em;
+}
+
+#menu-table tr.separator .content {
+  font-size: 1px;
+  line-height: 1px;
+  height: 1px;
+  margin: 0px;
+  padding: 0px 8px;
+  border-width: 0px;
+}
+#menu-table tr.separator .hr {
+  border: 1px solid rgb(145, 145, 145);
+  border-width: 0px 0px 1px 0px;
+  margin: 2px 0px 3px 0px;
+}
+
