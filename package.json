@@ -1,19 +1,24 @@
 {
   "name": "hta-ctx-menu",
-  "version": "0.0.003",
+  "version": "0.0.009",
   "type": "module",
   "description": "create real context menus for HTA (HTML Application)",
-  "main": "./dist/htactxmenu.js",
+  "main": "./dist/hta-ctx-menu.js",
+  "types": "./dist/hta-ctx-menu.d.ts",
   "files": [
-    "dist/**/*.js",
-    "dist/**/*.d.ts",
-    "dist-dev/**/*.js",
-    "dist-dev/**/*.d.ts"
+    "dist/*.js",
+    "dist/*.d.ts",
+    "dist/dev/*.js",
+    "dist/dev/*.d.ts"
   ],
-  "types": "./dist/htactxmenu.d.ts",
+  "exports": {
+    ".": "./dist/hta-ctx-menu.js",
+    "./dev": "./dist/dev/hta-ctx-menu.js"
+  },
   "scripts": {
     "dev": "rollup -c --watch",
-    "build": "node ./script/version.js && rollup -c",
+    "release": "node ./script/version.js && npm run build-res && npm run build-dev && npm run build",
+    "build": "rollup -c",
     "build-dev": "SET NODE_BUILD_DEV=true && rollup -c",
     "build-res": "node ./script/html-templates-to-json.js"
   },

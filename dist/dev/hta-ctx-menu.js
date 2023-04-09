@@ -4,12 +4,29 @@
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.HTAContextMenu = factory());
 })(this, (function () { 'use strict';
 
+    /******************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
     var extendStatics = function(d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
+
     function __extends(d, b) {
         if (typeof b !== "function" && b !== null)
             throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
@@ -17,6 +34,7 @@
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
+
     var __assign = function() {
         __assign = Object.assign || function __assign(t) {
             for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -390,6 +408,7 @@
             for (var _i = 1; _i < arguments.length; _i++) {
                 args[_i - 1] = arguments[_i];
             }
+            _console.log("".concat(this.$L(), "#fireMenuModelEvent: ").concat(handler), 'olive');
             for (var ename in this._menuModelEventListeners) {
                 if (ename !== handler)
                     continue;
@@ -490,6 +509,7 @@
          */
         MenuNormal.prototype.fireUserEvent = function (handler, eventObj) {
             var _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+            _console.log("".concat(this.$L(), "#MenuNormal#fireUserEvent:\"").concat(handler, "\""), 'olive');
             if (this._unlistening)
                 return;
             var notFired = false;
@@ -556,6 +576,7 @@
             eventObj.dispose();
         };
         MenuNormal.prototype.setLabel = function (label, asHtml) {
+            _console.log('MenuNormal#setLabel ' + label);
             var beforeLabel = this._label;
             this._label = label;
             this.fireMenuModelEvent('label', label, beforeLabel);
@@ -657,6 +678,7 @@
         _MenuCheckable.prototype.updateCheckableIcon = function (force) {
             var prev = this._previousChecked;
             var current = this._checked;
+            _console.log("".concat(this.$L(), "#updateCheckableIcon ").concat(prev, " => ").concat(current), 'olive');
             if (prev !== current || force) {
                 var icon = this._pairIcons || this._parent.getDefaultCheckableIcon(this._type) || this._defaultPairIcons;
                 this._applyIcon(current ? icon[0] : icon[1]);
@@ -699,6 +721,7 @@
         };
         _MenuCheckable.prototype.setChecked = function (flag) {
             var prev = this._checked;
+            _console.log("".concat(this.$L(), "#setChecked ").concat(prev, " => ").concat(flag), 'olive');
             flag = typeof flag === 'undefined' ? !prev : !!flag; // flip if flag is undefined
             if (flag === prev)
                 return false;
@@ -756,6 +779,7 @@
             }
         };
         MenuCheckbox.prototype.updateCheckedStatByRecord = function () {
+            _console.log("".concat(this.$L(), "#updateCheckedStatByRecord \"").concat(this._name, "\""), 'olive');
             this._checked = !!this._record.checked;
             this.updateCheckableIcon();
         };
@@ -835,6 +859,7 @@
             }
         };
         MenuRadio.prototype.updateCheckedStatByRecord = function () {
+            _console.log("".concat(this.$L(), "#updateCheckedStatByRecord \"").concat(this._name, "\""), 'olive');
             this._checked = this._record.selectedIndex === this._radioIndex;
             this.updateCheckableIcon();
         };
@@ -1192,6 +1217,7 @@
             return this._layer;
         };
         MenuSubmenu.prototype.setSkin = function (css) {
+            _console.log("".concat(this.$L(), "#setCSS ").concat(css), 'olive');
             this._skinCSSPath = css;
             this.fireMenuModelEvent('css', css);
             /*
@@ -1322,9 +1348,11 @@
         MenuSubmenu.prototype.__setSystemUserEvent = function (handler, callback) {
             switch (handler) {
                 case '_rootclose':
+                    _console.log("hooked _rootclose", "red");
                     this._onrootclose = callback;
                     break;
                 case '_viewready':
+                    _console.log("set _viewready");
                     this._onviewready = callback;
                     break;
             }
@@ -1347,13 +1375,16 @@
             if (handler !== '_rootclose' && handler !== '_viewready')
                 return _super.prototype.fireUserEvent.call(this, handler, eventObj);
             if (!this.isRoot()) {
+                _console.log("PARENT EXISTS:" + handler, "RED");
                 return;
             }
             switch (handler) {
                 case '_rootclose':
+                    _console.log('fire onrootclose', "yellow");
                     (_c = this._onrootclose) === null || _c === void 0 ? void 0 : _c.call(this, eventObj);
                     break;
                 case '_viewready':
+                    _console.log('fire onviewready', "yellow");
                     (_d = this._onviewready) === null || _d === void 0 ? void 0 : _d.call(this, eventObj);
                     break;
             }
@@ -1527,6 +1558,7 @@
         VirtualDOMNode.prototype.consumeQueuedClasses = function (onebyone) {
             if (!this._queuedClassNames.length)
                 return null;
+            _console.log("VNode#consumeQueuedClasses [".concat(this.label, "] ").concat(this._queuedClassNames.length), 'blue');
             var consumedClasses = [];
             while (this._queuedClassNames.length) {
                 var item_3 = this._queuedClassNames.shift();
@@ -1538,6 +1570,7 @@
             return consumedClasses;
         };
         VirtualDOMNode.prototype.apply = function () {
+            _console.log("VNode#apply [".concat(this.label, "]"), 'blue');
             var element = this.getRealElement(true);
             var filters = getAndApplyTransitions(element);
             this._transitions = filters.transitions;
@@ -1556,6 +1589,7 @@
             var longestDuration = -1;
             for (var _i = 0, transes_1 = transes; _i < transes_1.length; _i++) {
                 var fitem = transes_1[_i];
+                _console.log("VNode#play [".concat(this.label, "] \"").concat(fitem.type, "\""), 'blue');
                 try {
                     fitem.filter.play();
                     transFilter = fitem.filter;
@@ -1570,6 +1604,7 @@
                     playedFlag = true;
                 }
                 catch (e) {
+                    _console.log(e.message, "red");
                 }
             }
             if (playedFlag) {
@@ -1607,6 +1642,7 @@
                     f.enabled = !f.enabled;
                 }
                 catch (e) {
+                    _console.log(e.message, 'red');
                 }
             }
         };
@@ -1727,6 +1763,7 @@
                 var timeStamp = this._updated[attr];
                 if (!timeStamp)
                     continue;
+                _console.log("VNode#updateRealElement[".concat(this.label, "] \"").concat(attr, "\""), 'blue');
                 switch (attr) {
                     case '_html':
                         if (this._hasLinkedVNode) // prevent unexpected rewrite children of VirtualHTMLElements
@@ -1951,6 +1988,7 @@
                 callback();
             }
             if (this._qlist.length) {
+                _console.log("queue remain ".concat(this._qlist.length), 'skyblue');
                 this.hook();
             }
         };
@@ -1993,6 +2031,7 @@
                 appliedList.push({ filter: trans, type: transName });
             }
             catch (e) {
+                _console.log("unexpected filter name \"".concat(transName, "\""), 'red');
             }
         }
         if (flip) {
@@ -2024,1627 +2063,13 @@
 
     var BASE_HTML = "<html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=5\"><style>*{padding:0;margin:0;border-width:0}*html{font-size:30px}#container{display:inline-block;position:relative;height:100%}#menu-table{color:WindowText}#menu-table td{white-space:nowrap}#menu-table tr.menuitem-highlight{background-color:highlight;color:highlightText}#menu-table tr.separator td{font-size:1px}#menu-table tr.separator .hr{border-top:1px solid ThreeDShadow;border-bottom:1px solid ThreeDLightShadow}#menu-table tr.separator td.icon-hidden-for-separator{display:none}#menu-table td.icon{text-align:center}#menu-table td.icon .icon-container-alt{display:none}#menu-table td.border{display:none;font-size:1px}#menu-table td.border .border-container{font-size:1px}#menu-table td.content{display:inline-block}#menu-table td.arrow{text-align:center}#menu-table td.arrow .arrow-container{width:1em;font-size:x-small}#menu-table td.arrow .arrow-container-alt{display:none}#deco-frame-table .df-tbl-parts{display:none}.hidden{display:none}</style></head><body onkeydown=\"return false\"></body></html>";
 
-    var tag$4 = "DIV";
-    var attr$3 = {
-    	id: "container1"
-    };
-    var children$3 = [
-    	{
-    		tag: "SPAN",
-    		attr: {
-    			id: "container1-deco-box",
-    			"class": "hidden"
-    		},
-    		children: [
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container1-deco-box-child1",
-    					"class": "hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container1-deco-box-child2",
-    					"class": "hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container1-deco-box-child3",
-    					"class": "hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container1-deco-box-child4",
-    					"class": "hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container1-deco-box-child5",
-    					"class": "hidden"
-    				}
-    			}
-    		]
-    	},
-    	{
-    		tag: "DIV",
-    		attr: {
-    			id: "container2"
-    		},
-    		children: [
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container2-deco-box",
-    					"class": "hidden"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container2-deco-box-child1",
-    							"class": "hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container2-deco-box-child2",
-    							"class": "hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container2-deco-box-child3",
-    							"class": "hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container2-deco-box-child4",
-    							"class": "hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container2-deco-box-child5",
-    							"class": "hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "DIV",
-    				attr: {
-    					id: "container3"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container3-deco-box",
-    							"class": "hidden"
-    						},
-    						children: [
-    							{
-    								tag: "SPAN",
-    								attr: {
-    									id: "container3-deco-box-child1",
-    									"class": "hidden"
-    								}
-    							},
-    							{
-    								tag: "SPAN",
-    								attr: {
-    									id: "container3-deco-box-child2",
-    									"class": "hidden"
-    								}
-    							},
-    							{
-    								tag: "SPAN",
-    								attr: {
-    									id: "container3-deco-box-child3",
-    									"class": "hidden"
-    								}
-    							},
-    							{
-    								tag: "SPAN",
-    								attr: {
-    									id: "container3-deco-box-child4",
-    									"class": "hidden"
-    								}
-    							},
-    							{
-    								tag: "SPAN",
-    								attr: {
-    									id: "container3-deco-box-child5",
-    									"class": "hidden"
-    								}
-    							}
-    						]
-    					},
-    					{
-    						tag: "TABLE",
-    						attr: {
-    							id: "deco-frame",
-    							border: "0",
-    							cellspacing: "0",
-    							cellpadding: "0"
-    						},
-    						children: [
-    							{
-    								tag: "TR",
-    								attr: {
-    									id: "frame-top",
-    									"class": "deco-frame-parts"
-    								},
-    								children: [
-    									{
-    										tag: "TD",
-    										attr: {
-    											id: "frame-top-left-cell",
-    											"class": "deco-frame-parts"
-    										},
-    										children: [
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-top-left-deco1",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-top-left-deco2",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-top-left-deco3",
-    													"class": "hidden"
-    												}
-    											}
-    										]
-    									},
-    									{
-    										tag: "TD",
-    										attr: {
-    											id: "frame-top-center-cell",
-    											"class": "deco-frame-parts"
-    										},
-    										children: [
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-top-center-deco1",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-top-center-deco2",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-top-center-deco3",
-    													"class": "hidden"
-    												}
-    											}
-    										]
-    									},
-    									{
-    										tag: "TD",
-    										attr: {
-    											id: "frame-top-right-cell",
-    											"class": "deco-frame-parts"
-    										},
-    										children: [
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-top-right-deco1",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-top-right-deco2",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-top-right-deco3",
-    													"class": "hidden"
-    												}
-    											}
-    										]
-    									}
-    								]
-    							},
-    							{
-    								tag: "TR",
-    								attr: {
-    									id: "frame-middle"
-    								},
-    								children: [
-    									{
-    										tag: "TD",
-    										attr: {
-    											id: "frame-middle-left-cell",
-    											"class": "deco-frame-parts"
-    										},
-    										children: [
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-middle-left-deco1",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-middle-left-deco2",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-middle-left-deco3",
-    													"class": "hidden"
-    												}
-    											}
-    										]
-    									},
-    									{
-    										tag: "TD",
-    										attr: {
-    											id: "frame-middle-center-cell"
-    										},
-    										children: [
-    											{
-    												tag: "DIV",
-    												attr: {
-    													id: "menu-container1"
-    												},
-    												children: [
-    													{
-    														tag: "SPAN",
-    														attr: {
-    															id: "menu-container1-deco-box",
-    															"class": "hidden"
-    														},
-    														children: [
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container1-deco-box-child1",
-    																	"class": "hidden"
-    																}
-    															},
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container1-deco-box-child2",
-    																	"class": "hidden"
-    																}
-    															},
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container1-deco-box-child3",
-    																	"class": "hidden"
-    																}
-    															},
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container1-deco-box-child4",
-    																	"class": "hidden"
-    																}
-    															},
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container1-deco-box-child5",
-    																	"class": "hidden"
-    																}
-    															}
-    														]
-    													},
-    													{
-    														tag: "DIV",
-    														attr: {
-    															id: "menu-container2"
-    														},
-    														children: [
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container2-deco-box",
-    																	"class": "hidden"
-    																},
-    																children: [
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container2-deco-box-child1",
-    																			"class": "hidden"
-    																		}
-    																	},
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container2-deco-box-child2",
-    																			"class": "hidden"
-    																		}
-    																	},
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container2-deco-box-child3",
-    																			"class": "hidden"
-    																		}
-    																	},
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container2-deco-box-child4",
-    																			"class": "hidden"
-    																		}
-    																	},
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container2-deco-box-child5",
-    																			"class": "hidden"
-    																		}
-    																	}
-    																]
-    															},
-    															{
-    																tag: "DIV",
-    																attr: {
-    																	id: "menu-container3"
-    																},
-    																children: [
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container3-deco-box",
-    																			"class": "hidden"
-    																		},
-    																		children: [
-    																			{
-    																				tag: "SPAN",
-    																				attr: {
-    																					id: "menu-container3-deco-box-child1",
-    																					"class": "hidden"
-    																				}
-    																			},
-    																			{
-    																				tag: "SPAN",
-    																				attr: {
-    																					id: "menu-container3-deco-box-child2",
-    																					"class": "hidden"
-    																				}
-    																			},
-    																			{
-    																				tag: "SPAN",
-    																				attr: {
-    																					id: "menu-container3-deco-box-child3",
-    																					"class": "hidden"
-    																				}
-    																			},
-    																			{
-    																				tag: "SPAN",
-    																				attr: {
-    																					id: "menu-container3-deco-box-child4",
-    																					"class": "hidden"
-    																				}
-    																			},
-    																			{
-    																				tag: "SPAN",
-    																				attr: {
-    																					id: "menu-container3-deco-box-child5",
-    																					"class": "hidden"
-    																				}
-    																			}
-    																		]
-    																	},
-    																	{
-    																		tag: "DIV",
-    																		attr: {
-    																			id: "menu-table-container"
-    																		}
-    																	},
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container3-deco1",
-    																			"class": "hidden"
-    																		}
-    																	},
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container3-deco2",
-    																			"class": "hidden"
-    																		}
-    																	},
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container3-deco3",
-    																			"class": "hidden"
-    																		}
-    																	},
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container3-deco4",
-    																			"class": "hidden"
-    																		}
-    																	},
-    																	{
-    																		tag: "SPAN",
-    																		attr: {
-    																			id: "menu-container3-deco5",
-    																			"class": "hidden"
-    																		}
-    																	}
-    																]
-    															},
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container2-deco1",
-    																	"class": "hidden"
-    																}
-    															},
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container2-deco2",
-    																	"class": "hidden"
-    																}
-    															},
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container2-deco3",
-    																	"class": "hidden"
-    																}
-    															},
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container2-deco4",
-    																	"class": "hidden"
-    																}
-    															},
-    															{
-    																tag: "SPAN",
-    																attr: {
-    																	id: "menu-container2-deco5",
-    																	"class": "hidden"
-    																}
-    															}
-    														]
-    													},
-    													{
-    														tag: "SPAN",
-    														attr: {
-    															id: "menu-container1-deco1",
-    															"class": "hidden"
-    														}
-    													},
-    													{
-    														tag: "SPAN",
-    														attr: {
-    															id: "menu-container1-deco2",
-    															"class": "hidden"
-    														}
-    													},
-    													{
-    														tag: "SPAN",
-    														attr: {
-    															id: "menu-container1-deco3",
-    															"class": "hidden"
-    														}
-    													},
-    													{
-    														tag: "SPAN",
-    														attr: {
-    															id: "menu-container1-deco4",
-    															"class": "hidden"
-    														}
-    													},
-    													{
-    														tag: "SPAN",
-    														attr: {
-    															id: "menu-container1-deco5",
-    															"class": "hidden"
-    														}
-    													}
-    												]
-    											}
-    										]
-    									},
-    									{
-    										tag: "TD",
-    										attr: {
-    											id: "frame-middle-right-cell",
-    											"class": "deco-frame-parts"
-    										},
-    										children: [
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-middle-right-deco1",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-middle-right-deco2",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-middle-right-deco3",
-    													"class": "hidden"
-    												}
-    											}
-    										]
-    									}
-    								]
-    							},
-    							{
-    								tag: "TR",
-    								attr: {
-    									id: "frame-bottom",
-    									"class": "deco-frame-parts"
-    								},
-    								children: [
-    									{
-    										tag: "TD",
-    										attr: {
-    											id: "frame-bottom-left-cell",
-    											"class": "deco-frame-parts"
-    										},
-    										children: [
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-bottom-left-deco1",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-bottom-left-deco2",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-bottom-left-deco3",
-    													"class": "hidden"
-    												}
-    											}
-    										]
-    									},
-    									{
-    										tag: "TD",
-    										attr: {
-    											id: "frame-bottom-center-cell",
-    											"class": "deco-frame-parts"
-    										},
-    										children: [
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-bottom-center-deco1",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-bottom-center-deco2",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-bottom-center-deco3",
-    													"class": "hidden"
-    												}
-    											}
-    										]
-    									},
-    									{
-    										tag: "TD",
-    										attr: {
-    											id: "frame-bottom-right-cell",
-    											"class": "deco-frame-parts"
-    										},
-    										children: [
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-bottom-right-deco1",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-bottom-right-deco2",
-    													"class": "hidden"
-    												}
-    											},
-    											{
-    												tag: "SPAN",
-    												attr: {
-    													id: "frame-bottom-right-deco3",
-    													"class": "hidden"
-    												}
-    											}
-    										]
-    									}
-    								]
-    							}
-    						]
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container3-deco1",
-    							"class": "hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container3-deco2",
-    							"class": "hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container3-deco3",
-    							"class": "hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container3-deco4",
-    							"class": "hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							id: "container3-deco5",
-    							"class": "hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container2-deco1",
-    					"class": "hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container2-deco2",
-    					"class": "hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container2-deco3",
-    					"class": "hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container2-deco4",
-    					"class": "hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					id: "container2-deco5",
-    					"class": "hidden"
-    				}
-    			}
-    		]
-    	},
-    	{
-    		tag: "SPAN",
-    		attr: {
-    			id: "container1-deco1",
-    			"class": "hidden"
-    		}
-    	},
-    	{
-    		tag: "SPAN",
-    		attr: {
-    			id: "container1-deco2",
-    			"class": "hidden"
-    		}
-    	},
-    	{
-    		tag: "SPAN",
-    		attr: {
-    			id: "container1-deco3",
-    			"class": "hidden"
-    		}
-    	},
-    	{
-    		tag: "SPAN",
-    		attr: {
-    			id: "container1-deco4",
-    			"class": "hidden"
-    		}
-    	},
-    	{
-    		tag: "SPAN",
-    		attr: {
-    			id: "container1-deco5",
-    			"class": "hidden"
-    		}
-    	}
-    ];
-    var MENU_CONTAINER_JSON = {
-    	tag: tag$4,
-    	attr: attr$3,
-    	children: children$3
-    };
+    var tag$4="DIV";var attr$3={id:"container1"};var children$3=[{tag:"SPAN",attr:{id:"container1-deco-box","class":"hidden"},children:[{tag:"SPAN",attr:{id:"container1-deco-box-child1","class":"hidden"}},{tag:"SPAN",attr:{id:"container1-deco-box-child2","class":"hidden"}},{tag:"SPAN",attr:{id:"container1-deco-box-child3","class":"hidden"}},{tag:"SPAN",attr:{id:"container1-deco-box-child4","class":"hidden"}},{tag:"SPAN",attr:{id:"container1-deco-box-child5","class":"hidden"}}]},{tag:"DIV",attr:{id:"container2"},children:[{tag:"SPAN",attr:{id:"container2-deco-box","class":"hidden"},children:[{tag:"SPAN",attr:{id:"container2-deco-box-child1","class":"hidden"}},{tag:"SPAN",attr:{id:"container2-deco-box-child2","class":"hidden"}},{tag:"SPAN",attr:{id:"container2-deco-box-child3","class":"hidden"}},{tag:"SPAN",attr:{id:"container2-deco-box-child4","class":"hidden"}},{tag:"SPAN",attr:{id:"container2-deco-box-child5","class":"hidden"}}]},{tag:"DIV",attr:{id:"container3"},children:[{tag:"SPAN",attr:{id:"container3-deco-box","class":"hidden"},children:[{tag:"SPAN",attr:{id:"container3-deco-box-child1","class":"hidden"}},{tag:"SPAN",attr:{id:"container3-deco-box-child2","class":"hidden"}},{tag:"SPAN",attr:{id:"container3-deco-box-child3","class":"hidden"}},{tag:"SPAN",attr:{id:"container3-deco-box-child4","class":"hidden"}},{tag:"SPAN",attr:{id:"container3-deco-box-child5","class":"hidden"}}]},{tag:"TABLE",attr:{id:"deco-frame",border:"0",cellspacing:"0",cellpadding:"0"},children:[{tag:"TR",attr:{id:"frame-top","class":"deco-frame-parts"},children:[{tag:"TD",attr:{id:"frame-top-left-cell","class":"deco-frame-parts"},children:[{tag:"SPAN",attr:{id:"frame-top-left-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-top-left-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-top-left-deco3","class":"hidden"}}]},{tag:"TD",attr:{id:"frame-top-center-cell","class":"deco-frame-parts"},children:[{tag:"SPAN",attr:{id:"frame-top-center-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-top-center-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-top-center-deco3","class":"hidden"}}]},{tag:"TD",attr:{id:"frame-top-right-cell","class":"deco-frame-parts"},children:[{tag:"SPAN",attr:{id:"frame-top-right-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-top-right-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-top-right-deco3","class":"hidden"}}]}]},{tag:"TR",attr:{id:"frame-middle"},children:[{tag:"TD",attr:{id:"frame-middle-left-cell","class":"deco-frame-parts"},children:[{tag:"SPAN",attr:{id:"frame-middle-left-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-middle-left-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-middle-left-deco3","class":"hidden"}}]},{tag:"TD",attr:{id:"frame-middle-center-cell"},children:[{tag:"DIV",attr:{id:"menu-container1"},children:[{tag:"SPAN",attr:{id:"menu-container1-deco-box","class":"hidden"},children:[{tag:"SPAN",attr:{id:"menu-container1-deco-box-child1","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container1-deco-box-child2","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container1-deco-box-child3","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container1-deco-box-child4","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container1-deco-box-child5","class":"hidden"}}]},{tag:"DIV",attr:{id:"menu-container2"},children:[{tag:"SPAN",attr:{id:"menu-container2-deco-box","class":"hidden"},children:[{tag:"SPAN",attr:{id:"menu-container2-deco-box-child1","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container2-deco-box-child2","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container2-deco-box-child3","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container2-deco-box-child4","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container2-deco-box-child5","class":"hidden"}}]},{tag:"DIV",attr:{id:"menu-container3"},children:[{tag:"SPAN",attr:{id:"menu-container3-deco-box","class":"hidden"},children:[{tag:"SPAN",attr:{id:"menu-container3-deco-box-child1","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container3-deco-box-child2","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container3-deco-box-child3","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container3-deco-box-child4","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container3-deco-box-child5","class":"hidden"}}]},{tag:"DIV",attr:{id:"menu-table-container"}},{tag:"SPAN",attr:{id:"menu-container3-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container3-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container3-deco3","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container3-deco4","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container3-deco5","class":"hidden"}}]},{tag:"SPAN",attr:{id:"menu-container2-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container2-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container2-deco3","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container2-deco4","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container2-deco5","class":"hidden"}}]},{tag:"SPAN",attr:{id:"menu-container1-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container1-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container1-deco3","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container1-deco4","class":"hidden"}},{tag:"SPAN",attr:{id:"menu-container1-deco5","class":"hidden"}}]}]},{tag:"TD",attr:{id:"frame-middle-right-cell","class":"deco-frame-parts"},children:[{tag:"SPAN",attr:{id:"frame-middle-right-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-middle-right-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-middle-right-deco3","class":"hidden"}}]}]},{tag:"TR",attr:{id:"frame-bottom","class":"deco-frame-parts"},children:[{tag:"TD",attr:{id:"frame-bottom-left-cell","class":"deco-frame-parts"},children:[{tag:"SPAN",attr:{id:"frame-bottom-left-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-bottom-left-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-bottom-left-deco3","class":"hidden"}}]},{tag:"TD",attr:{id:"frame-bottom-center-cell","class":"deco-frame-parts"},children:[{tag:"SPAN",attr:{id:"frame-bottom-center-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-bottom-center-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-bottom-center-deco3","class":"hidden"}}]},{tag:"TD",attr:{id:"frame-bottom-right-cell","class":"deco-frame-parts"},children:[{tag:"SPAN",attr:{id:"frame-bottom-right-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-bottom-right-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"frame-bottom-right-deco3","class":"hidden"}}]}]}]},{tag:"SPAN",attr:{id:"container3-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"container3-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"container3-deco3","class":"hidden"}},{tag:"SPAN",attr:{id:"container3-deco4","class":"hidden"}},{tag:"SPAN",attr:{id:"container3-deco5","class":"hidden"}}]},{tag:"SPAN",attr:{id:"container2-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"container2-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"container2-deco3","class":"hidden"}},{tag:"SPAN",attr:{id:"container2-deco4","class":"hidden"}},{tag:"SPAN",attr:{id:"container2-deco5","class":"hidden"}}]},{tag:"SPAN",attr:{id:"container1-deco1","class":"hidden"}},{tag:"SPAN",attr:{id:"container1-deco2","class":"hidden"}},{tag:"SPAN",attr:{id:"container1-deco3","class":"hidden"}},{tag:"SPAN",attr:{id:"container1-deco4","class":"hidden"}},{tag:"SPAN",attr:{id:"container1-deco5","class":"hidden"}}];var MENU_CONTAINER_JSON = {tag:tag$4,attr:attr$3,children:children$3};
 
-    var tag$3 = "TR";
-    var attr$2 = {
-    	"class": "menuitem default"
-    };
-    var children$2 = [
-    	{
-    		tag: "TD",
-    		attr: {
-    			"class": "icon"
-    		},
-    		children: [
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco-box hidden"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child1 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child2 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child3 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child4 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child5 hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "DIV",
-    				attr: {
-    					"class": "icon-container"
-    				}
-    			},
-    			{
-    				tag: "DIV",
-    				attr: {
-    					"class": "icon-container-alt"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco1 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco2 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco3 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco4 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco5 hidden"
-    				}
-    			}
-    		]
-    	},
-    	{
-    		tag: "TD",
-    		attr: {
-    			"class": "border"
-    		},
-    		children: [
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "border-container"
-    				}
-    			}
-    		]
-    	},
-    	{
-    		tag: "TD",
-    		attr: {
-    			"class": "content"
-    		},
-    		children: [
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco-box hidden"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child1 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child2 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child3 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child4 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child5 hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "DIV",
-    				attr: {
-    					"class": "content-container"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco1 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco2 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco3 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco4 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco5 hidden"
-    				}
-    			}
-    		]
-    	},
-    	{
-    		tag: "TD",
-    		attr: {
-    			"class": "arrow"
-    		},
-    		children: [
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco-box hidden"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child1 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child2 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child3 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child4 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child5 hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "DIV",
-    				attr: {
-    					"class": "arrow-container"
-    				}
-    			},
-    			{
-    				tag: "DIV",
-    				attr: {
-    					"class": "arrow-container-alt"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco1 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco2 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco3 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco4 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco5 hidden"
-    				}
-    			}
-    		]
-    	}
-    ];
-    var ITEM_DEFAULT_JSON = {
-    	tag: tag$3,
-    	attr: attr$2,
-    	children: children$2
-    };
+    var tag$3="TR";var attr$2={"class":"menuitem default"};var children$2=[{tag:"TD",attr:{"class":"icon"},children:[{tag:"SPAN",attr:{"class":"icon-deco-box hidden"},children:[{tag:"SPAN",attr:{"class":"icon-deco-box-child1 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child2 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child3 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child4 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child5 hidden"}}]},{tag:"DIV",attr:{"class":"icon-container"}},{tag:"DIV",attr:{"class":"icon-container-alt"}},{tag:"SPAN",attr:{"class":"icon-deco1 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco2 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco3 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco4 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco5 hidden"}}]},{tag:"TD",attr:{"class":"border"},children:[{tag:"SPAN",attr:{"class":"border-container"}}]},{tag:"TD",attr:{"class":"content"},children:[{tag:"SPAN",attr:{"class":"content-deco-box hidden"},children:[{tag:"SPAN",attr:{"class":"content-deco-box-child1 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child2 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child3 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child4 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child5 hidden"}}]},{tag:"DIV",attr:{"class":"content-container"}},{tag:"SPAN",attr:{"class":"content-deco1 hidden"}},{tag:"SPAN",attr:{"class":"content-deco2 hidden"}},{tag:"SPAN",attr:{"class":"content-deco3 hidden"}},{tag:"SPAN",attr:{"class":"content-deco4 hidden"}},{tag:"SPAN",attr:{"class":"content-deco5 hidden"}}]},{tag:"TD",attr:{"class":"arrow"},children:[{tag:"SPAN",attr:{"class":"arrow-deco-box hidden"},children:[{tag:"SPAN",attr:{"class":"arrow-deco-box-child1 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child2 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child3 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child4 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child5 hidden"}}]},{tag:"DIV",attr:{"class":"arrow-container"}},{tag:"DIV",attr:{"class":"arrow-container-alt"}},{tag:"SPAN",attr:{"class":"arrow-deco1 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco2 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco3 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco4 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco5 hidden"}}]}];var ITEM_DEFAULT_JSON = {tag:tag$3,attr:attr$2,children:children$2};
 
-    var tag$2 = "TR";
-    var attr$1 = {
-    	"class": "menuitem union"
-    };
-    var children$1 = [
-    	{
-    		tag: "TD",
-    		attr: {
-    			"class": "content",
-    			colspan: "4"
-    		},
-    		children: [
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco-box hidden"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child1 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child2 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child3 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child4 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child5 hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco1 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco2 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco3 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco4 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco5 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco-box hidden"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child1 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child2 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child3 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child4 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child5 hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco1 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco2 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco3 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco4 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco5 hidden"
-    				}
-    			},
-    			{
-    				tag: "DIV",
-    				attr: {
-    					"class": "content-container"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco-box hidden"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child1 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child2 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child3 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child4 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child5 hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco1 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco2 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco3 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco4 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco5 hidden"
-    				}
-    			}
-    		]
-    	}
-    ];
-    var ITEM_UNION_JSON = {
-    	tag: tag$2,
-    	attr: attr$1,
-    	children: children$1
-    };
+    var tag$2="TR";var attr$1={"class":"menuitem union"};var children$1=[{tag:"TD",attr:{"class":"content",colspan:"4"},children:[{tag:"SPAN",attr:{"class":"icon-deco-box hidden"},children:[{tag:"SPAN",attr:{"class":"icon-deco-box-child1 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child2 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child3 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child4 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child5 hidden"}}]},{tag:"SPAN",attr:{"class":"icon-deco1 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco2 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco3 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco4 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco5 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box hidden"},children:[{tag:"SPAN",attr:{"class":"content-deco-box-child1 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child2 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child3 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child4 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child5 hidden"}}]},{tag:"SPAN",attr:{"class":"content-deco1 hidden"}},{tag:"SPAN",attr:{"class":"content-deco2 hidden"}},{tag:"SPAN",attr:{"class":"content-deco3 hidden"}},{tag:"SPAN",attr:{"class":"content-deco4 hidden"}},{tag:"SPAN",attr:{"class":"content-deco5 hidden"}},{tag:"DIV",attr:{"class":"content-container"}},{tag:"SPAN",attr:{"class":"arrow-deco-box hidden"},children:[{tag:"SPAN",attr:{"class":"arrow-deco-box-child1 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child2 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child3 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child4 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child5 hidden"}}]},{tag:"SPAN",attr:{"class":"arrow-deco1 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco2 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco3 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco4 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco5 hidden"}}]}];var ITEM_UNION_JSON = {tag:tag$2,attr:attr$1,children:children$1};
 
-    var tag$1 = "TR";
-    var attr = {
-    	"class": "menuitem separator"
-    };
-    var children = [
-    	{
-    		tag: "TD",
-    		attr: {
-    			"class": "icon icon-hidden-for-separator"
-    		},
-    		children: [
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco-box hidden"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child1 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child2 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child3 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child4 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "icon-deco-box-child5 hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco1 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco2 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco3 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco4 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "icon-deco5 hidden"
-    				}
-    			},
-    			{
-    				tag: "DIV",
-    				attr: {
-    					"class": "icon-container"
-    				}
-    			},
-    			{
-    				tag: "DIV",
-    				attr: {
-    					"class": "icon-container-alt"
-    				}
-    			}
-    		]
-    	},
-    	{
-    		tag: "TD",
-    		attr: {
-    			"class": "border"
-    		},
-    		children: [
-    			{
-    				tag: "SPAN"
-    			}
-    		]
-    	},
-    	{
-    		tag: "TD",
-    		attr: {
-    			"class": "content separator",
-    			colspan: "4"
-    		},
-    		children: [
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco-box hidden"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child1 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child2 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child3 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child4 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "content-deco-box-child5 hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco1 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco2 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco3 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco4 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "content-deco5 hidden"
-    				}
-    			},
-    			{
-    				tag: "DIV",
-    				attr: {
-    					"class": "content-container"
-    				},
-    				children: [
-    					{
-    						tag: "DIV",
-    						attr: {
-    							"class": "hr"
-    						},
-    						children: [
-    							{
-    								tag: "SPAN",
-    								attr: {
-    									"class": "separator-deco1 hidden"
-    								}
-    							},
-    							{
-    								tag: "SPAN",
-    								attr: {
-    									"class": "separator-deco2 hidden"
-    								}
-    							},
-    							{
-    								tag: "SPAN",
-    								attr: {
-    									"class": "separator-deco3 hidden"
-    								}
-    							}
-    						]
-    					}
-    				]
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco-box hidden"
-    				},
-    				children: [
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child1 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child2 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child3 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child4 hidden"
-    						}
-    					},
-    					{
-    						tag: "SPAN",
-    						attr: {
-    							"class": "arrow-deco-box-child5 hidden"
-    						}
-    					}
-    				]
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco1 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco2 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco3 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco4 hidden"
-    				}
-    			},
-    			{
-    				tag: "SPAN",
-    				attr: {
-    					"class": "arrow-deco5 hidden"
-    				}
-    			}
-    		]
-    	}
-    ];
-    var ITEM_SEPARATOR_JSON = {
-    	tag: tag$1,
-    	attr: attr,
-    	children: children
-    };
+    var tag$1="TR";var attr={"class":"menuitem separator"};var children=[{tag:"TD",attr:{"class":"icon icon-hidden-for-separator"},children:[{tag:"SPAN",attr:{"class":"icon-deco-box hidden"},children:[{tag:"SPAN",attr:{"class":"icon-deco-box-child1 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child2 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child3 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child4 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco-box-child5 hidden"}}]},{tag:"DIV",attr:{"class":"icon-container"}},{tag:"DIV",attr:{"class":"icon-container-alt"}},{tag:"SPAN",attr:{"class":"icon-deco1 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco2 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco3 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco4 hidden"}},{tag:"SPAN",attr:{"class":"icon-deco5 hidden"}}]},{tag:"TD",attr:{"class":"border"},children:[{tag:"SPAN"}]},{tag:"TD",attr:{"class":"content separator",colspan:"4"},children:[{tag:"SPAN",attr:{"class":"content-deco-box hidden"},children:[{tag:"SPAN",attr:{"class":"content-deco-box-child1 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child2 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child3 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child4 hidden"}},{tag:"SPAN",attr:{"class":"content-deco-box-child5 hidden"}}]},{tag:"SPAN",attr:{"class":"arrow-deco-box hidden"},children:[{tag:"SPAN",attr:{"class":"arrow-deco-box-child1 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child2 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child3 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child4 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco-box-child5 hidden"}}]},{tag:"DIV",attr:{"class":"content-container"},children:[{tag:"DIV",attr:{"class":"hr"},children:[{tag:"SPAN",attr:{"class":"separator-deco1 hidden"}},{tag:"SPAN",attr:{"class":"separator-deco2 hidden"}},{tag:"SPAN",attr:{"class":"separator-deco3 hidden"}}]}]},{tag:"SPAN",attr:{"class":"content-deco1 hidden"}},{tag:"SPAN",attr:{"class":"content-deco2 hidden"}},{tag:"SPAN",attr:{"class":"content-deco3 hidden"}},{tag:"SPAN",attr:{"class":"content-deco4 hidden"}},{tag:"SPAN",attr:{"class":"content-deco5 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco1 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco2 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco3 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco4 hidden"}},{tag:"SPAN",attr:{"class":"arrow-deco5 hidden"}}]}];var ITEM_SEPARATOR_JSON = {tag:tag$1,attr:attr,children:children};
 
     // essential vnode selectors
     var ESLCT_CONTAINER = {
@@ -3711,6 +2136,10 @@
         };
         _ViewBase.prototype._getVNode = function (selector) {
             var vnode = this._selectorBank[selector] || null;
+            if (!vnode) {
+                // throw new Error(`unexpected selector "${selector}"`);
+                _console.log("unexpected selector \"".concat(selector, "\""), 'red');
+            }
             return vnode;
         };
         _ViewBase.prototype.isAvailable = function () {
@@ -3744,6 +2173,7 @@
             (_a = _ViewBase._ViewListWaitingToUpdate[this.uid]) === null || _a === void 0 ? true : delete _a.flagNames[flagName];
         };
         _ViewBase.prototype.setViewFlag = function (flagName, flag, ontransitionend) {
+            _console.log("".concat(this.$L(), "#setViewFlag \"").concat(String(flagName), "\" : ").concat(flag), 'darkcyan');
             if (Boolean(this._statFlags[flagName]) !== flag) {
                 this._statFlags[flagName] = flag;
                 this._addViewFlagUpdatingList(String(flagName), flag, ontransitionend);
@@ -3768,12 +2198,14 @@
         */
         _ViewBase.prototype.setClassAndTransitions = function (className, flag, ontransitionend) {
             var velement = this._mainNode;
+            _console.log("".concat(this.$L(), "#setClassAndTransitions \"").concat(className, "\" : ").concat(flag, " (").concat(velement.label, ")"), 'darkcyan');
             // direction
             var _a = flag ? ['to', 'from'] : ['from', 'to'], addDir = _a[0], removeDir = _a[1];
             // check transition target elements
             var transTargetCount = 0;
             var transEndedCount = 0;
             var transTargets = this._getTransTargets()[className];
+            _console.log(transTargets, 'purple');
             if (transTargets) {
                 // remove all transition classes beforehand
                 velement.removeClass("trans-".concat(removeDir, "-").concat(className, " trans-").concat(addDir, "-").concat(className));
@@ -3784,6 +2216,7 @@
                         continue;
                     var transTargetNode = this._getVNode(item_2.target); // VNode
                     if (transTargetNode) {
+                        _console.log("".concat(this.$L(), " trans-").concat(addDir, "-").concat(className, " ").concat(item_2.target), 'darkcyan');
                         transTargetCount++;
                         var callback = void 0;
                         if (ontransitionend || addDir === 'from') {
@@ -3804,6 +2237,9 @@
                         VNodeUpdater.apply(transTargetNode);
                         VNodeUpdater.play(transTargetNode, callback);
                     }
+                }
+                if (ontransitionend) {
+                    _console.log("".concat(this.$L(), " trans-").concat(addDir, "-").concat(className, " trans-targets: ").concat(transTargetCount), 'cyan');
                 }
             }
             // add transition classes
@@ -3890,6 +2326,7 @@
             return _this;
         }
         MenuDialogView.prototype._initializeDialog = function (itemNumber, parentWin, customClass) {
+            _console.log("".concat(this.$L(), "#_initializeDialog"), 'darkcyan');
             // if less than IE6, always use root window as a context since invoking showmodelessDialog() from modelessDilaog's window doesn't work properly.
             var contextWin = IE_Version.MSIE >= 6 && parentWin || window;
             // create a modeless dialog
@@ -3952,6 +2389,7 @@
         };
         // need to calculate correct margins after rendering
         MenuDialogView.prototype.initLayout = function () {
+            _console.log("".concat(this.$L(), "#initLayout"), 'darkcyan');
             this._calculateTableItemMargin();
         };
         MenuDialogView.prototype.loadStyleSheet = function (path) {
@@ -3969,6 +2407,7 @@
         };
         MenuDialogView.prototype.setCSSText = function (cssText, getSettings) {
             if (getSettings === void 0) { getSettings = false; }
+            _console.log("".concat(this.$L(), "#setCSSText"), 'darkcyan');
             this._styleSheet.cssText += '\r\n' + cssText;
             if (getSettings) {
                 var txt = this._styleSheet.cssText;
@@ -3985,6 +2424,7 @@
             VNodeUpdater.update(this._vmenutable);
         };
         MenuDialogView.prototype.clearStyleSheet = function () {
+            _console.log("".concat(this.$L(), "#clearStyleSheet"), 'darkcyan');
             this._styleSheet.cssText = '';
             this._activeStyleSheet = this._styleSheet;
             //this._styleSheet.cssText = '';
@@ -4007,6 +2447,7 @@
             }
         };
         MenuDialogView.prototype._parseTransitionTargetsFromCSS = function (cssText) {
+            _console.log("".concat(this.$L(), "#setTransitionTagetsByCSS"), 'darkcyan');
             var forContainer = {};
             var forItem = {};
             var checkDup = {};
@@ -4021,6 +2462,7 @@
                 };
                 // detect only one pair of transition target and class
                 var id = "{".concat(className, "@").concat(direction, "@").concat(selector, "}");
+                _console.log(id);
                 if (!checkDup[id]) {
                     var type = targetType === '.' ? forItem : forContainer;
                     var list = type[className] = type[className] || [];
@@ -4029,6 +2471,8 @@
                 }
                 return m;
             });
+            _console.log(forContainer, 'purple');
+            _console.log(forItem, 'purple');
             this._transTargetsForContainer = forContainer;
             this._transTargetsForItems = forItem;
         };
@@ -4106,6 +2550,7 @@
                 tableClientLeft: table.clientLeft,
                 tableClientTop: table.clientTop
             };
+            _console.log(this.getItemMargin(), "purple");
         };
         MenuDialogView.prototype.getItemMargin = function () {
             return this._calculatedTableItemMargin;
@@ -4123,6 +2568,7 @@
             immediate ? this._vdoc.updateRealElement() : VNodeUpdater.update(this._vdoc);
         };
         MenuDialogView.prototype.createTableViewItems = function (itemParams) {
+            _console.log("".concat(this.$L(), "#createTableViewItems"), 'darkcyan');
             var viewItemList = [];
             var index = 0;
             for (var _i = 0, itemParams_1 = itemParams; _i < itemParams_1.length; _i++) {
@@ -4132,9 +2578,11 @@
                 viewItemList.push(item_3);
             }
             // construct a whole menu table
+            _console.time('putHTMLTable');
             this._vtablecontainer.updateRealElement(true);
             // link real table elements
             this._vmenutable.linkRealElementFromParent();
+            _console.timeEnd('putHTMLTable');
             // set events
             for (var i = 0; i < viewItemList.length; i++) {
                 viewItemList[i].prepareRealElements();
@@ -4168,6 +2616,7 @@
         };
         MenuDialogView.prototype.getContentSize = function (callback) {
             var _this = this;
+            _console.log("".concat(this.$L(), "#getContentSize"), 'darkcyan');
             // synchronous
             if (!callback) {
                 VNodeUpdater.process();
@@ -4201,6 +2650,7 @@
         };
         MenuDialogView.prototype.resizeDialog = function (w, h) {
             var _this = this;
+            _console.log("".concat(this.$L(), "#resizeDialog: ") + [w, h], 'darkcyan');
             VNodeUpdater.callback(function () {
                 try {
                     if (!_this._win)
@@ -4217,6 +2667,7 @@
         };
         MenuDialogView.prototype.moveDialog = function (x, y) {
             var _this = this;
+            _console.log("".concat(this.$L(), "#moveDialog: ") + [x, y], 'darkcyan');
             VNodeUpdater.callback(function () {
                 if (!_this._win)
                     return;
@@ -4232,6 +2683,7 @@
         };
         MenuDialogView.prototype.adjustDialog = function (x, y) {
             var _a = this.getContentSize(), cw = _a.width, ch = _a.height;
+            _console.log("".concat(this.$L(), "#adjustDialog ").concat([cw, ch]), 'darkcyan');
             this.moveDialog(x, y);
             this.resizeDialog(cw, ch);
         };
@@ -4249,12 +2701,14 @@
         };
         MenuDialogView.prototype.setLoad = function () {
             var _this = this;
+            _console.log("".concat(this.$L(), "#setBodyLoadTransition"), 'darkcyan');
             this.setViewFlag('load', true, function () {
                 _this._vbody.removeClass('beforeload');
                 _this.setViewFlag('afterload', true);
             });
         };
         MenuDialogView.prototype.setBodyViewFlagByItem = function (flagName, flag, itemIndex, customClasses) {
+            _console.log("".concat(this.$L(), "#setBodyViewFlag ").concat(flagName, " ").concat(flag, " ").concat(itemIndex), 'darkcyan');
             //this.setClassAndTransitions(flagName, flag);
             this.setViewFlag(flagName, flag);
             // set numelic classes
@@ -4295,6 +2749,9 @@
                 }
             }
             catch (e) {
+                {
+                    alert("an error occured during detaching view events\n" + e.message);
+                }
             }
             this._items.length = 0;
             this._evaDoc = null;
@@ -4415,6 +2872,7 @@
             this._eva = new EventAttacher(this._vrow.getRealElement(true), this);
         };
         MenuItemView.prototype.updateVirtualNodes = function () {
+            _console.log("".concat(this.$L(), "#updateRealElements"), 'darkcyan');
             //const priority = this.getLayer();
             //VNodeUpdater.update([this._vcell1_icon!, this._vcontentContainer, this._vcontentDecoContainer, this._viconContainer!, this._varrowContainer!], priority);
             var list = [];
@@ -4426,6 +2884,7 @@
         };
         MenuItemView.prototype.update = function (_a) {
             var type = _a.type, label = _a.label, icon = _a.icon, arrow = _a.arrow, _b = _a.flags, _c = _b === void 0 ? {} : _b, unselectable = _c.unselectable, checked = _c.checked, disabled = _c.disabled, html = _c.html, usericon = _c.usericon;
+            _console.log("".concat(this.$L(), "#update label:").concat(label, " icon:").concat(icon), 'darkcyan');
             switch (type) {
                 case 'separator':
                     return;
@@ -4493,10 +2952,12 @@
             this._eva.detach(name, handler);
         };
         MenuItemView.prototype._setIcon = function (icon, velement) {
+            _console.log("".concat(this.$L(), "#_setIcon"), 'darkcyan');
             //console.log(icon);
             if (!velement) {
                 velement = this._selectorBank[ESLCT_ITEM.ICON_CONTAINER];
                 if (!velement) {
+                    _console.log("".concat(ESLCT_ITEM.ICON_CONTAINER, " is not found"));
                     return;
                 }
             }
@@ -4575,6 +3036,9 @@
                 this._eva.dispose();
             }
             catch (e) {
+                {
+                    alert("an error occured during detaching view item events\n" + e.message);
+                }
             }
             this._container = null;
             this._vrow.dispose();
@@ -4644,6 +3108,7 @@
             this._locked += (flag ? 1 : -1);
             //console.log(`#setLocked ${flag} (${this._locked})`, 'red');
             if (this._locked < 0) {
+                _console.log("#setLocked cleared negative _locked count.", 'red');
                 this._locked = 0;
             }
         };
@@ -4687,6 +3152,7 @@
          * create controller and view
          */
         MenuRootController.prototype.open = function (x, y, ctx) {
+            _console.log('MenuRootController#open', 'yellow');
             this.close();
             var ctrl = new MenuContainerController(this, ctx, { base: 'screen', marginX: x, marginY: y });
             if (ctrl === null || ctrl === void 0 ? void 0 : ctrl.getView()) {
@@ -4700,6 +3166,7 @@
          */
         MenuRootController.prototype.close = function () {
             var _a;
+            _console.log('MenuRootController#close', 'yellow');
             (_a = this._ctrl) === null || _a === void 0 ? void 0 : _a.dispose();
         };
         MenuRootController.prototype.isUpdatingView = function () {
@@ -4862,7 +3329,6 @@
          * @memberof MenuContainerController
          */
         function MenuContainerController(param, ctx, pos) {
-            var _a;
             this._view = null;
             this._items = [];
             this._parent = null;
@@ -4906,23 +3372,17 @@
             this._modelEventMananger = new MenuModelEventManager(this._model);
             this._model.fireUserEvent('beforeload', new MenuUserEventObject('beforeload', this));
             // do not to catch window initializing error when dev mode
-            // catch an error during initializing the view window when in production mode
-            try {
+            {
+                _console.time('createView');
                 this._createView(pos);
+                _console.timeEnd('createView');
                 this._model.fireUserEvent('load', new MenuUserEventObject('load', this));
-            }
-            catch (e) {
-                this._parentItem = null;
-                this._parent = null;
-                this._ctx = null;
-                this._rootCtrl = null;
-                (_a = this._evaBaseDoc) === null || _a === void 0 ? void 0 : _a.dispose();
-                this._model = null;
-                this._view = null;
+                return;
             }
         }
         MenuContainerController.prototype._createView = function (pos) {
             var _a;
+            _console.log("".concat(this.$L(), "#_createView"), 'green');
             this._currentItem = null;
             // opening dialog without delay causes problems occasionally on IE6 or lower (duplicating dialogs)
             if (IE_Version.real <= 6) {
@@ -4937,17 +3397,22 @@
                 this._view = null;
             }
             // get new view
+            _console.time('testTime');
             try {
                 this._view = new MenuDialogView((this._parentItem && this._parentItem.getModel().getIndex() + 1 || 0), (_a = this._parent) === null || _a === void 0 ? void 0 : _a.getView(), this._model.getCustomDialogClass());
                 this._setViewDOMEvents(this._view);
             }
             catch (e) {
+                {
+                    alert("an error occured during create new MenuDialogView\n" + e.message);
+                }
                 this._initializingView = false;
                 this._view = null;
                 return;
             }
             // set CSS
             var css = this._model.getSkin();
+            _console.log("".concat(this.$L(), " css: ").concat(css), 'green');
             if (!css) {
                 css = 'default';
             }
@@ -4965,6 +3430,7 @@
                 this._view.setMenuFontFamily(fontFamily);
             // create menu items
             this._createItems(this._model);
+            _console.timeEnd('testTime');
             // set default control icons for internal skins
             switch (css) {
                 case 'default':
@@ -4984,6 +3450,14 @@
                     this._model.setDefaultCheckableIcon('checkbox', { text: '\xfc', fontFamily: 'Wingdings' });
                     this._model.setDefaultCheckableIcon('radio', { text: '\x69', fontFamily: 'Marlett' });
                     break;
+            }
+            {
+                if (this._disposed) {
+                    alert("already disposed!");
+                    this._disposed = false;
+                    this.dispose();
+                    return;
+                }
             }
             this._view.initLayout();
             var _b = this._calculatePosition(pos), left = _b.left, top = _b.top, posX = _b.posX, posY = _b.posY;
@@ -5012,6 +3486,8 @@
         // calculate the position where the view should appear
         MenuContainerController.prototype._calculatePosition = function (pos) {
             var _a;
+            _console.log("".concat(this.$L(), "#_calculatePosition"), 'green');
+            _console.log(pos);
             var _b = pos.base, base = _b === void 0 ? 'screen' : _b, _c = pos.marginX, marginX = _c === void 0 ? 0 : _c, _d = pos.marginY, marginY = _d === void 0 ? 0 : _d, _e = pos.posX, posX = _e === void 0 ? 'left' : _e, _f = pos.posY, posY = _f === void 0 ? 'top' : _f, _g = pos.marginLeft, marginLeft = _g === void 0 ? 0 : _g, _h = pos.marginRight, marginRight = _h === void 0 ? 0 : _h;
             var _j = window.screen, scrWidth = _j.availWidth, scrHeight = _j.availHeight;
             var _k = this._view.getContentSize(), menuWidth = _k.width, menuHeight = _k.height;
@@ -5042,6 +3518,7 @@
                         baseRect.top -= itemMarginTop;
                         baseRect.bottom += itemMarginBottom;
                         baseRect.right += itemMarginRight;
+                        _console.log(baseRect, "orange");
                         break;
                     }
                     case 'parent':
@@ -5165,6 +3642,7 @@
             return this._viewPosition;
         };
         MenuContainerController.prototype._createItems = function (submenuModel) {
+            _console.log("".concat(this.$L(), "#_createItems"), 'green');
             var models = this._model.produceItems(new MenuUserEventObject('demand', this));
             this._items.length = 0;
             var itemNumber = 1;
@@ -5201,6 +3679,7 @@
             */
         };
         MenuContainerController.prototype.setSkinToCurrentView = function (css) {
+            _console.log("".concat(this.$L(), "#loadSkin"), "green");
             switch (css) {
                 case 'default':
                     this._view.setCSSText(css_default, true);
@@ -5240,6 +3719,7 @@
         };
         MenuContainerController.prototype.setCSSTextToCurrentView = function (cssText) {
             var _a;
+            _console.log("".concat(this.$L(), "#setCSSText"), 'green');
             (_a = this._view) === null || _a === void 0 ? void 0 : _a.setCSSText(cssText);
         };
         MenuContainerController.prototype.resizeView = function (width, height) {
@@ -5302,6 +3782,7 @@
          */
         MenuContainerController.prototype.openSubmenu = function (item) {
             var _a, _b, _c, _d, _e;
+            _console.log("".concat(this.$L(), "#openSubmenu"), "green");
             // check 2 times to make sure that it does not have a child
             if (this._openingSubmenu)
                 return;
@@ -5310,10 +3791,12 @@
             // remove current existing child menu
             if ((_a = this._child) === null || _a === void 0 ? void 0 : _a.isAvailable()) {
                 if (this.isCurrentOpenedChildSubmenuItem(item)) {
+                    _console.log('already opened the child');
                     return;
                 }
                 this.disposeChild();
             }
+            _console.log("do createSubmenu", "lime");
             this._openingSubmenu = true;
             this._view.setDocumentClass('topmost', false);
             clearTimeout(this._mouseStayOutSubmenuTimeoutId);
@@ -5366,6 +3849,7 @@
         };
         MenuContainerController.prototype.setTopMost = function () {
             var _a;
+            _console.log("".concat(this.$L(), " setTopMost"), 'green');
             (_a = this._view) === null || _a === void 0 ? void 0 : _a.setDocumentClass('topmost');
         };
         /**
@@ -5394,6 +3878,7 @@
         MenuContainerController.prototype._setViewDOMEvents = function (view) {
             var _this_1 = this;
             var _a;
+            _console.log("".concat(this.$L(), "#_setViewEvents"), 'green');
             (_a = this._evaBaseDoc) === null || _a === void 0 ? void 0 : _a.attach('onmouseup', this.checkAvailabilityBeforeCall(this._onBaseDocClick));
             // when it losed focus by an other window, onfocusout event fires.
             view.addDocumentEvent('onfocusout', this.checkAvailabilityBeforeCall(this._onDocumentFocusOut));
@@ -5432,11 +3917,13 @@
          */
         MenuContainerController.prototype._onDocumentFocusOut = function (ev) {
             var _a;
+            _console.log("".concat(this.$L(), "#_onDocumentFocusOut[l").concat(this._model.getLayer(), "]"), 'green');
             if (!this._view)
                 return;
             if (this._model.isPopup() && this.isLocked()) ;
             // current dialog (and probably all other dialogs) loses focus
             else if (!((_a = this._view) === null || _a === void 0 ? void 0 : _a.hasFocus())) {
+                _console.log('close from _onDocumentFocusOut', 'red');
                 if (this._model.getAutoClose()) {
                     this.disposeAll();
                 }
@@ -5450,6 +3937,7 @@
          * @memberof MenuContainerController
          */
         MenuContainerController.prototype._onBaseDocClick = function (ev) {
+            _console.log("".concat(this.$L(), "#_onBaseDocClick"), 'green');
             if (!this._view || !this._model.getAutoClose()) {
                 return;
             }
@@ -5468,6 +3956,8 @@
          * @memberof MenuContainerController
          */
         MenuContainerController.prototype._onKeyPress = function (ev) {
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+            _console.log("".concat(this.$L(), "#_onKeyPress: ") + ev.keyCode);
             //if( this._discarded || !this.isAvailable() )
             //  return;
             switch (ev.keyCode) {
@@ -5516,6 +4006,19 @@
                         this._currentItem.activate(ev);
                     break;
             }
+            switch (ev.keyCode) {
+                case 17: //CTRL
+                    _console.log("".concat((_a = this._currentItem) === null || _a === void 0 ? void 0 : _a.getModel().$L(), " className: ").concat((_d = (_c = (_b = this._currentItem) === null || _b === void 0 ? void 0 : _b.getView()) === null || _c === void 0 ? void 0 : _c.getVirtualElement().getRealElement()) === null || _d === void 0 ? void 0 : _d.className));
+                    _console.log("".concat((_g = (_f = (_e = this._currentItem) === null || _e === void 0 ? void 0 : _e.getView()) === null || _f === void 0 ? void 0 : _f.getVirtualElement().getRealElement()) === null || _g === void 0 ? void 0 : _g.outerHTML));
+                    break;
+                case 16: //SHIFT
+                    _console.log('body.className: ' + ((_h = this.getView()) === null || _h === void 0 ? void 0 : _h.getDoc().body.className));
+                    _console.log('doc.className: ' + ((_j = this.getView()) === null || _j === void 0 ? void 0 : _j.getDoc().documentElement.className));
+                    break;
+                case 18: //ALT
+                    _console.log('table: ' + ((_k = this.getView()) === null || _k === void 0 ? void 0 : _k.getDoc().documentElement.outerHTML));
+                    break;
+            }
         };
         // prevent to close dialog
         MenuContainerController.prototype._onPressAltF4 = function (ev) {
@@ -5553,16 +4056,19 @@
             var index = startItem ? startItem.getModel().getIndex() : -1;
             var item = null;
             for (var i = items.length; i--;) {
+                _console.log('index:' + index + " plus:" + plus);
                 index += plus;
                 if (index === items.length)
                     index = 0;
                 else if (index < 0)
                     index = items.length - 1;
+                _console.log('!index:' + index);
                 item = items[index];
                 var model = item.getModel();
                 var flags = model.isNormal() ? model.getFlags() : null;
                 if (!flags || flags.unselectable || flags.disabled)
                     continue;
+                _console.log('index:' + index);
                 return item;
             }
             return null;
@@ -5575,6 +4081,7 @@
             var flags = model.getFlags();
             if (flags.unselectable || flags.disabled)
                 return;
+            _console.log("".concat(this.$L(), "#setCurrentItem => ").concat(item.getModel().$L()), 'green');
             if (this._currentItem !== item) {
                 // de-highlight previous highlighted item
                 if (this._currentItem) {
@@ -5609,6 +4116,7 @@
             //this.getRootController().setLocked(false);
             if (this._currentItem === item)
                 return;
+            _console.log("".concat(this.$L(), "#setCurrentItem3 => ").concat(item.getModel().$L()), 'green');
             this._currentItem = item;
             // calculate mouse staying time
             if (activateMouseStay) {
@@ -5622,6 +4130,7 @@
             this._mouseOverItemTimeoutId = window.setTimeout(function () {
                 var _a;
                 //this.synchronize();
+                _console.log("".concat(_this_1.$L(), "#mousestay ").concat(stayingItem.getModel().$L()), "red");
                 _this_1.isAvailable() && view.isAvailable() && _this_1._currentItem === stayingItem;
                 /*
                 if( !available ) {
@@ -5633,6 +4142,7 @@
                 var result = (_a = _this_1._currentItem) === null || _a === void 0 ? void 0 : _a.fireMouseStay();
                 // re execute if failed to fireMouseStay
                 if (result === false) {
+                    _console.log("".concat(_this_1.$L(), "#mousestay recall"), 'red');
                     _this_1._hookMouseStay(stayingItem, view, 100);
                     return;
                 }
@@ -5655,7 +4165,9 @@
             if (this.isCurrentOpenedChildSubmenuItem(item) || this._closingCurrentChildTimeoutId)
                 return;
             this._closingCurrentChildTimeoutId = setTimeout(function () {
+                _console.log("".concat(_this_1.$L(), "#_closingCurrentChildTimeoutId"), 'red');
                 if (item === _this_1._currentItem) { // prevent mousestay too
+                    _console.log('_clearMouseStayTimeout', 'red');
                     _this_1._clearMouseStayTimeout();
                 }
                 _this_1.disposeChild();
@@ -5681,6 +4193,7 @@
             var pcontainer = (_a = this._parentItem) === null || _a === void 0 ? void 0 : _a.getContainer();
             if (!(pcontainer === null || pcontainer === void 0 ? void 0 : pcontainer.hasView()))
                 return;
+            _console.log("".concat(this.$L(), "#setThisAsParentCurrentItem"), 'green');
             //!it interacts with another window!
             pcontainer.setCurrentItem(this._parentItem, true);
             pcontainer.clearClosingCurrentChildTimeout();
@@ -5716,8 +4229,9 @@
             (_a = this._parent) === null || _a === void 0 ? void 0 : _a.disposeChild();
         };
         MenuContainerController.prototype.disposeChild = function () {
-            var _b;
+            var _a, _b;
             if (this._child) {
+                _console.log("do diposeChild[chl".concat((_a = this._child) === null || _a === void 0 ? void 0 : _a.getLayer(), "]"), "green");
                 var opendItem = this._child.getBasedItemController();
                 if (opendItem) {
                     var model = opendItem.getModel();
@@ -5740,6 +4254,7 @@
         MenuContainerController.prototype.dispose = function () {
             if (this._disposed)
                 return;
+            _console.log("".concat(this.$L(), "#dispose"), 'green');
             this._disposed = true;
             this._dispose();
         };
@@ -5774,6 +4289,9 @@
                 (_b = this._evaBaseDoc) === null || _b === void 0 ? void 0 : _b.dispose();
             }
             catch (e) {
+                {
+                    alert("an error occured during detaching _evaBaseDoc\n" + e.message);
+                }
             }
             this._model.fireUserEvent('unload', new MenuUserEventObject('unload', this));
             if (this._parent) {
@@ -5817,9 +4335,11 @@
             var _this_1 = this;
             this._onMouseOverItem = function (ev) { return _this_1._container.setCurrentItem(_this_1, true); };
             this._onMouseDownItem = function (ev) {
+                _console.log("".concat(_this_1._model.$L(), "#_onMouseDownItem"), 'green');
                 _this_1._container.setLastMouseDownedItem(_this_1);
             };
             this._onMouseUpItem = function (ev) {
+                _console.log("".concat(_this_1._model.$L(), "#_onMouseUpItem"), 'green');
                 if (ev.button === 1 && _this_1._container.getLastMouseDownedItem() === _this_1) {
                     _this_1._container.setCurrentItem(_this_1);
                     _this_1.activate(ev);
@@ -5903,12 +4423,14 @@
             var _this_1 = this;
             var _a, _b, _c, _d, _e;
             if (ev === void 0) { ev = {}; }
+            _console.log("".concat(this._model.$L(), "#activate: ").concat(ev.type), 'green');
             var model = this._model;
             // ignore separators
             if (!model.isNormal()) {
                 return;
             }
             if (!((_a = this._container) === null || _a === void 0 ? void 0 : _a.isAvailable()) /*|| !this._selectable*/) {
+                _console.log('container is not available', 'red');
                 return false;
             }
             var queue = new Queue();
@@ -5987,6 +4509,10 @@
                             flags.holdParent ? _this_1._container.disposeFromParent() : _this_1._container.disposeAll();
                         }
                         catch (e) {
+                            {
+                                _console.log(e, 'red');
+                                alert(e);
+                            }
                         }
                         queue.next(function () { return model.fireUserEvent('close', closeEvObj); });
                     });
@@ -6011,6 +4537,7 @@
          */
         MenuItemController.prototype.fireMouseStay = function () {
             var _a, _b, _c;
+            _console.log("".concat(this._model.$L(), "#fireMouseStay"), 'green');
             switch (this.getModel().getType()) {
                 case 'submenu':
                     //this._container.openSubmenu(this);
@@ -6125,6 +4652,7 @@
          * create stand alone popup dialog
          */
         MenuContainerUI.prototype.popup = function (args /*PopupControllerParameter*/, marginX, marginY) {
+            _console.log('#confirm', "red");
             /*
             if( !this._ctrl!.getView() )
               return;
@@ -6161,17 +4689,11 @@
         return MenuItemUI;
     }(_MenuUI));
 
-    var major = 0;
-    var minor = 0;
-    var build = 2;
-    var tag = "";
-    var Ver = {
-    	major: major,
-    	minor: minor,
-    	build: build,
-    	tag: tag
-    };
+    var major=0;var minor=0;var build=9;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
 
+    {
+        Ver.tag = 'dev';
+    }
     var HTAContextMenu = /** @class */ (function (_super) {
         __extends(HTAContextMenu, _super);
         function HTAContextMenu(param) {

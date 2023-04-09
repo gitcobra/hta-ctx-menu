@@ -25,11 +25,13 @@ const BUILD_DEV = !!process.env.NODE_BUILD_DEV;
 // global name for the constructor
 const GLOBAL_NAME = 'HTAContextMenu';
 // bundle file name
-const bundleName = `hta-ctx-menu${BUILD_DEV ? '-dev' : ''}`;
+const bundleName = `hta-ctx-menu`;
 // destination
-const dist = `dist${BUILD_DEV ? '-dev' : ''}`;
+const dist = `dist${BUILD_DEV ? '/dev' : ''}`;
 
 const CommonPlugins = [
+  json({compact: true}),
+  
   loadHtml({
     include: [
       "res/**/*html",
@@ -42,7 +44,6 @@ const CommonPlugins = [
     },
   }),
   
-  json(),
   // HACK: 
   // unfortunately rollup-plugin-json uses Object.freeze (that doesn't work on HTA of course).
   // so it replaces "Object.freeze({...})" with "Object({...})".
@@ -67,10 +68,12 @@ const BuildConfig = [
 
     plugins: [
       ...!DEV ? [del({
-        targets: [`${dist}/`],
+        targets: [`${dist}/*.js`, `${dist}/*.ts`, `${dist}/dts`],
         hook: 'buildStart',
         verbose: true
       }),] : [],
+
+      ...CommonPlugins,
 
       typescript({
         // FIXME: actually the test folder is not required here but when a single source folder is specified, a compile error occurs for some reason
@@ -85,10 +88,9 @@ const BuildConfig = [
         },
       }),
 
-      ...CommonPlugins,
 
       // remove DEV blocks
-      ...!(DEV && BUILD_DEV) ? [
+      ...!(DEV || BUILD_DEV) ? [
         strip({
           include: ["**/*.js", "**/*.ts"],
           labels: ["DEV"],
@@ -122,7 +124,7 @@ const BuildConfig = [
 ];
 
 
-// for test folder's
+// for test folder's ts files. they export same folder.
 if( DEV ) {
   const externalId = new URL('./dist/hta-ctx-menu', import.meta.url).pathname.substring(1).replace(/\//g, '\\');
   const TEST_SRC = './test/';

@@ -49,6 +49,18 @@
           ]
         },
         {
+          "tag": "DIV",
+          "attr": {
+            "class": "icon-container"
+          }
+        },
+        {
+          "tag": "DIV",
+          "attr": {
+            "class": "icon-container-alt"
+          }
+        },
+        {
           "tag": "SPAN",
           "attr": {
             "class": "icon-deco1 hidden"
@@ -76,18 +88,6 @@
           "tag": "SPAN",
           "attr": {
             "class": "icon-deco5 hidden"
-          }
-        },
-        {
-          "tag": "DIV",
-          "attr": {
-            "class": "icon-container"
-          }
-        },
-        {
-          "tag": "DIV",
-          "attr": {
-            "class": "icon-container-alt"
           }
         }
       ]
@@ -151,32 +151,40 @@
         {
           "tag": "SPAN",
           "attr": {
-            "class": "content-deco1 hidden"
-          }
-        },
-        {
-          "tag": "SPAN",
-          "attr": {
-            "class": "content-deco2 hidden"
-          }
-        },
-        {
-          "tag": "SPAN",
-          "attr": {
-            "class": "content-deco3 hidden"
-          }
-        },
-        {
-          "tag": "SPAN",
-          "attr": {
-            "class": "content-deco4 hidden"
-          }
-        },
-        {
-          "tag": "SPAN",
-          "attr": {
-            "class": "content-deco5 hidden"
-          }
+            "class": "arrow-deco-box hidden"
+          },
+          "children": [
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "arrow-deco-box-child1 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "arrow-deco-box-child2 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "arrow-deco-box-child3 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "arrow-deco-box-child4 hidden"
+              }
+            },
+            {
+              "tag": "SPAN",
+              "attr": {
+                "class": "arrow-deco-box-child5 hidden"
+              }
+            }
+          ]
         },
         {
           "tag": "DIV",
@@ -215,40 +223,32 @@
         {
           "tag": "SPAN",
           "attr": {
-            "class": "arrow-deco-box hidden"
-          },
-          "children": [
-            {
-              "tag": "SPAN",
-              "attr": {
-                "class": "arrow-deco-box-child1 hidden"
-              }
-            },
-            {
-              "tag": "SPAN",
-              "attr": {
-                "class": "arrow-deco-box-child2 hidden"
-              }
-            },
-            {
-              "tag": "SPAN",
-              "attr": {
-                "class": "arrow-deco-box-child3 hidden"
-              }
-            },
-            {
-              "tag": "SPAN",
-              "attr": {
-                "class": "arrow-deco-box-child4 hidden"
-              }
-            },
-            {
-              "tag": "SPAN",
-              "attr": {
-                "class": "arrow-deco-box-child5 hidden"
-              }
-            }
-          ]
+            "class": "content-deco1 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "content-deco2 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "content-deco3 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "content-deco4 hidden"
+          }
+        },
+        {
+          "tag": "SPAN",
+          "attr": {
+            "class": "content-deco5 hidden"
+          }
         },
         {
           "tag": "SPAN",
