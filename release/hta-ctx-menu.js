@@ -4547,7 +4547,7 @@
         return MenuItemUI;
     }(_MenuUI));
 
-    var major=0;var minor=0;var build=9;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
+    var major=0;var minor=0;var build=12;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
 
     var HTAContextMenu = /** @class */ (function (_super) {
         __extends(HTAContextMenu, _super);

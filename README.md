@@ -23,9 +23,9 @@ It can be changed its appearance by applying a CSS. Several simple internal skin
 ![ff](./docs/img/ff.png)
 ![chimi](./docs/img/chimi.png)
 
-## Usage
+## Installation
 
-Save [`hta-ctx-menu.js`](./dist/hta-ctx-menu.js?raw=true) to your local disk and load it from your **HTA** file.
+Save [`hta-ctx-menu.js`](./release/hta-ctx-menu.js?raw=true) to your local disk and load it from your **HTA** file.
 
 ```
 <script src="hta-ctx-menu.js"></script>
@@ -46,7 +46,7 @@ please refer to this repository...
 ```
 
 
-### Sample Code
+## Usage
 ```
 
 // create an instance

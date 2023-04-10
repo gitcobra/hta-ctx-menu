@@ -21,13 +21,14 @@ import replace from '@rollup/plugin-replace';
 // development flag
 const DEV = !!process.env.ROLLUP_WATCH;
 const BUILD_DEV = !!process.env.NODE_BUILD_DEV;
+const RELEASE = !!process.env.NODE_BUILD_RELEASE;
 
 // global name for the constructor
 const GLOBAL_NAME = 'HTAContextMenu';
 // bundle file name
 const bundleName = `hta-ctx-menu`;
 // destination
-const dist = `dist${BUILD_DEV ? '/dev' : ''}`;
+const dist = `${RELEASE ? 'release' : 'dist'}${BUILD_DEV ? '/dev' : ''}`;
 
 const CommonPlugins = [
   json({compact: true}),
