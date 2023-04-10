@@ -1,10 +1,10 @@
 {
   "name": "hta-ctx-menu",
-  "version": "0.0.012",
+  "version": "0.0.013",
   "type": "module",
   "description": "create real context menus for HTA (HTML Application)",
-  "main": "./dist/hta-ctx-menu.js",
-  "types": "./dist/hta-ctx-menu.d.ts",
+  "main": "./release/hta-ctx-menu.js",
+  "types": "./release/hta-ctx-menu.d.ts",
   "files": [
     "release/**/*.js",
     "release/**/*.d.ts"
@@ -15,10 +15,11 @@
   },
   "scripts": {
     "dev": "rollup -c --watch",
-    "release": "SET NODE_BUILD_RELEASE=true && node ./script/version.js && npm run build-res && npm run build",
+    "release": "SET NODE_BUILD_RELEASE=true && npm run ver-update && npm run build-res && npm run build",
     "build": "rollup -c",
     "build-dev": "SET NODE_BUILD_DEV=true && rollup -c",
-    "build-res": "node ./script/html-templates-to-json.js"
+    "build-res": "node ./script/html-templates-to-json.js",
+    "ver-update": "node ./script/version.js"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^6.0.0",
