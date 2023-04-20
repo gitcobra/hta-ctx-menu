@@ -9,8 +9,8 @@
         items: [
             {
                 type: 'demand',
-                ondemand: function (ev) {
-                    if (ev.ctx.nodeName !== 'A')
+                ondemand: function (ev, ctx) {
+                    if (ctx.nodeName !== 'A')
                         return;
                     return [{
                             type: 'submenu',
@@ -26,8 +26,8 @@
                                         text: 'Ù',
                                         fontFamily: 'WingDings'
                                     },
-                                    onactivate: function (ev) {
-                                        ev.ctx.style.fontSize = parseInt(ev.ctx.currentStyle.fontSize) * 1.3 + 'px';
+                                    onactivate: function (ev, ctx) {
+                                        ctx.style.fontSize = parseInt(ev.ctx.currentStyle.fontSize) * 1.3 + 'px';
                                     }
                                 },
                                 {
@@ -36,8 +36,8 @@
                                         text: 'Ú',
                                         fontFamily: 'WingDings'
                                     },
-                                    onclick: function (ev) {
-                                        ev.ctx.style.fontSize = parseInt(ev.ctx.currentStyle.fontSize) * 0.7 + 'px';
+                                    onclick: function () {
+                                        ctx.style.fontSize = parseInt(ev.ctx.currentStyle.fontSize) * 0.7 + 'px';
                                     }
                                 },
                                 { type: 'separator' },
@@ -61,8 +61,8 @@
                                                 return 0;
                                         }
                                     })(),
-                                    onchange: function (ev) {
-                                        ev.ctx.style.color = ev.value;
+                                    onchange: function (ev, ctx) {
+                                        ctx.style.color = ev.value;
                                     }
                                 }
                             ]
@@ -79,7 +79,7 @@
                         global: true,
                         name: 'skinradio',
                         labels: ['default', 'classic', 'xp', 'win7'],
-                        onchange: function (ev) {
+                        onchange: function (ev, ctx) {
                             menu.loadSkin(ev.value);
                         }
                     }]
@@ -111,8 +111,8 @@
             {
                 type: 'checkbox',
                 label: 'this is linked to the checkbox',
-                onchange: function (ev) {
-                    Checkbox.checked = ev.checked;
+                onchange: function (ev, ctx) {
+                    Checkbox.checked = !!ev.checked;
                     // @ts-ignore
                     Checkbox.onclick(ev.checked);
                 },

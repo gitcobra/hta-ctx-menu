@@ -360,13 +360,13 @@ class MenuDialogView extends _ViewBase<MenuDialogView> {
     empty?: boolean
   } = {};
   
-  constructor(itemNumber: number, parent?: MenuDialogView | null, customClass?: string) {
+  constructor(itemNumber: number, parent?: MenuDialogView | null, customClass?: string, specifiedParentWindow?: Window) {
     super();
     this._layer = parent ? parent._layer + 1 : 0;
 
     this._vmenutable = new VirtualDOMNode('table', {id:'menu-table', border:0, cellSpacing:0, cellPadding:0}, '#menu-table');
 
-    this._win = this._initializeDialog(itemNumber, parent?.win(), customClass);
+    this._win = this._initializeDialog(itemNumber, specifiedParentWindow || parent?.win(), customClass);
     this._doc = this._win.document;
     this.setDocumentClass('topmost');
 
@@ -375,7 +375,7 @@ class MenuDialogView extends _ViewBase<MenuDialogView> {
 
   }
 
-  private _initializeDialog(itemNumber: number, parentWin?: MSWindowModeless, customClass?: string): MSWindowModeless {
+  private _initializeDialog(itemNumber: number, parentWin?: Window, customClass?: string): MSWindowModeless {
     console.log(`${this.$L()}#_initializeDialog`, 'darkcyan');
     
     // if less than IE6, always use root window as a context since invoking showmodelessDialog() from modelessDilaog's window doesn't work properly.

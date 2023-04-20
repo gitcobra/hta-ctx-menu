@@ -1,15 +1,15 @@
 import HTAContextMenu from "../dist/hta-ctx-menu";
 
 const CheckRecord = { checked: false };
-const menu = new HTAContextMenu({
+const menu = new HTAContextMenu<HTMLElement>({
   skin: 'classic',
   //autoClose: false,
   //fontSize: 20,
   items: [
     {
       type: 'demand',
-      ondemand(ev) {
-        if( ev.ctx.nodeName !== 'A' )
+      ondemand(ev, ctx) {
+        if( ctx.nodeName !== 'A' )
           return;
         
         return [{
@@ -26,8 +26,8 @@ const menu = new HTAContextMenu({
                 text: 'Ù',
                 fontFamily: 'WingDings',
               },
-              onactivate(ev) {
-                ev.ctx.style.fontSize = parseInt(ev.ctx.currentStyle.fontSize) * 1.3 + 'px';
+              onactivate(ev, ctx) {
+                ctx.style.fontSize = parseInt(ev.ctx.currentStyle.fontSize) * 1.3 + 'px';
               }
             },
             {
@@ -36,8 +36,8 @@ const menu = new HTAContextMenu({
                 text: 'Ú',
                 fontFamily: 'WingDings',
               },
-              onclick(ev) {
-                ev.ctx.style.fontSize = parseInt(ev.ctx.currentStyle.fontSize) * 0.7 + 'px';
+              onclick() {
+                ctx.style.fontSize = parseInt(ev.ctx.currentStyle.fontSize) * 0.7 + 'px';
               }
             },
             { type: 'separator' },
@@ -61,8 +61,8 @@ const menu = new HTAContextMenu({
                     return 0;
                 }
               })(),
-              onchange(ev) {
-                ev.ctx.style.color = ev.value;
+              onchange(ev, ctx) {
+                ctx.style.color = ev.value;
               }
             }
           ],
@@ -79,7 +79,7 @@ const menu = new HTAContextMenu({
         global: true,
         name: 'skinradio',
         labels: ['default', 'classic', 'xp', 'win7'],
-        onchange(ev) {
+        onchange(ev, ctx: HTMLElement) {
           menu.loadSkin(ev.value);
         }
       }],
@@ -111,8 +111,8 @@ const menu = new HTAContextMenu({
     {
       type: 'checkbox',
       label: 'this is linked to the checkbox',
-      onchange(ev) {
-        Checkbox.checked = ev.checked;
+      onchange(ev, ctx) {
+        Checkbox.checked = !!ev.checked;
         // @ts-ignore
         Checkbox.onclick(ev.checked);
       },
@@ -122,7 +122,7 @@ const menu = new HTAContextMenu({
 });
 
 document.oncontextmenu = () => {
-  menu.open(event.screenX, event.screenY, event.srcElement);
+  menu.open(event.screenX, event.screenY, event.srcElement as HTMLElement);
   return false;
 };
 

@@ -17,7 +17,6 @@ import replace from '@rollup/plugin-replace';
 
 
 
-
 // development flag
 const DEV = !!process.env.ROLLUP_WATCH;
 const BUILD_DEV = !!process.env.NODE_BUILD_DEV;
@@ -25,10 +24,25 @@ const RELEASE = !!process.env.NODE_BUILD_RELEASE;
 
 // global name for the constructor
 const GLOBAL_NAME = 'HTAContextMenu';
-// bundle file name
+// bundle file namey
 const bundleName = `hta-ctx-menu`;
 // destination
 const dist = `${RELEASE ? 'release' : 'dist'}${BUILD_DEV ? '/dev' : ''}`;
+
+// banner
+let BANNER_TXT = '';
+if( !DEV ) {
+  const Ver = JSON.parse(fs.readFileSync('./res/version.json'));
+  const VERSION_TXT = `${Ver.major}.${Ver.minor}.${String(Ver.build).padStart(3, '0')}${Ver.tag}`;
+
+  BANNER_TXT = `/*
+  title: hta-ctx-menu
+  version: ${VERSION_TXT}
+  github: https://github.com/gitcobra/hta-ctx-menu
+*/`;
+}
+
+
 
 const CommonPlugins = [
   json({compact: true}),
@@ -54,7 +68,6 @@ const CommonPlugins = [
   }),
 ];
 
-
 const BuildConfig = [
   {
     input: ["src/entry.ts"],
@@ -65,6 +78,7 @@ const BuildConfig = [
       name: GLOBAL_NAME,
       sourcemap: false,
       esModule: false,
+      banner: BANNER_TXT
     },
 
     plugins: [
@@ -125,7 +139,7 @@ const BuildConfig = [
 ];
 
 
-// for test folder's ts files. they export same folder.
+// for test folder's ts files. they are output to the same folder.
 if( DEV ) {
   const externalId = new URL('./dist/hta-ctx-menu', import.meta.url).pathname.substring(1).replace(/\//g, '\\');
   const TEST_SRC = './test/';

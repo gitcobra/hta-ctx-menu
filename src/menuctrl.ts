@@ -1,5 +1,5 @@
 import { MenuSubmenu, MenuModelItem, MenuItemSubmenuParameter, PopupPosition, IconSettingType, _MenuModelable } from "./menumodel";
-import { MenuItemUserEventNames, MenuUserEventObjectModel, MenuGlobalEventNames } from "./menumodel";
+import { MenuItemUserEventNames, MenuUserEventObjectModel, MenuGlobalEventNames, UserEventListener } from "./menumodel";
 import { MenuDialogView, MenuItemView, UpdateItemType as UpdateViewItemType } from "./menuview";
 import { Queue, EventAttacher, IE_Version, console } from "./utils";
 
@@ -21,10 +21,11 @@ const CLOSE_CHILD_MOUSEOUT_TIME = 1200;
 const DblClick_Delay = 250;
 let _CommonUniqueCounter = 0;
 
-abstract class _RootController extends _MenuModelable {
+abstract class _RootController<CTX> extends _MenuModelable<CTX> {
   protected _locked = 0; // locked stack number
-  protected _lastChild?: MenuContainerController;
+  protected _lastChild?: MenuContainerController<CTX>;
   protected _enableOnlyLastChild: boolean = false;
+
   abstract open(...args:any): void
   
   setLocked(flag: boolean) {
@@ -35,10 +36,10 @@ abstract class _RootController extends _MenuModelable {
       this._locked = 0;
     }
   }
-  isLocked(ctrl?: MenuContainerController): boolean {
+  isLocked(ctrl?: MenuContainerController<CTX>): boolean {
     return !!this._locked || !!(this._enableOnlyLastChild && ctrl && ctrl !== this._lastChild);
   }
-  setLastChild(ctrl: MenuContainerController) {
+  setLastChild(ctrl: MenuContainerController<CTX>) {
     this._lastChild = ctrl;
   }
   enableOnlyLastChild(flag: boolean = true) {
@@ -54,14 +55,14 @@ abstract class _RootController extends _MenuModelable {
   abstract close(): void
 }
 
-class MenuRootController extends _RootController {
-  protected _model: MenuSubmenu;
-  protected _ctrl: MenuContainerController | null = null;
+class MenuRootController<CTX> extends _RootController<CTX> {
+  protected _model: MenuSubmenu<CTX>;
+  protected _ctrl: MenuContainerController<CTX> | null = null;
   //private _locked: number = 0; // locked stack number
   protected _readyToUse = false;
   protected _isUpdatingView = false;
 
-  constructor(param: MenuItemSubmenuParameter/*, inheritAttr?: MenuSubmenu*/) {
+  constructor(param: MenuItemSubmenuParameter<CTX>/*, inheritAttr?: MenuSubmenu*/) {
     super();
     this._model = new MenuSubmenu(param/*, inheritAttr, true*/);
     
@@ -77,11 +78,11 @@ class MenuRootController extends _RootController {
   /**
    * create controller and view
    */
-  open(x:number, y:number, ctx?:any) {
+  open(x:number, y:number, ctx:CTX, parentWindow?: Window) {
     console.log('MenuRootController#open', 'yellow');
     this.close();
     
-    const ctrl = new MenuContainerController(this, ctx, {base:'screen', marginX:x, marginY:y});
+    const ctrl = new MenuContainerController<CTX>(this, ctx, {base:'screen', marginX:x, marginY:y}, parentWindow);
     if( ctrl?.getView() ) {
       this._ctrl = ctrl;
       this._readyToUse = true;
@@ -143,7 +144,7 @@ class MenuRootController extends _RootController {
   loadSkin(path: string) {
     this._model.setSkin(path);
   }
-  setGlobalEvent(handler: MenuGlobalEventNames, listener: EventListener | null) {
+  setGlobalEvent(handler: MenuGlobalEventNames, listener: UserEventListener<CTX> | null) {
     this._model.setGlobalEvent(handler, listener);
   }
   clearGlobalEvents() {
@@ -262,16 +263,16 @@ let _lastDialogViewCreatedTime = 0;
  * core Menu controller
  * @class MenuContainerController
  */
-class MenuContainerController {
-  private _model: MenuSubmenu;
+class MenuContainerController<CTX> {
+  private _model: MenuSubmenu<CTX>;
   private _view: MenuDialogView | null = null;
-  private _items: MenuItemController[] = [];
+  private _items: MenuItemController<CTX>[] = [];
   private _ctx: any;
 
-  private _parent: MenuContainerController | null = null;
-  private _rootCtrl: MenuRootController;
-  private _parentItem: MenuItemController | null = null;
-  private _child: MenuContainerController | null = null;
+  private _parent: MenuContainerController<CTX> | null = null;
+  private _rootCtrl: MenuRootController<CTX>;
+  private _parentItem: MenuItemController<CTX> | null = null;
+  private _child: MenuContainerController<CTX> | null = null;
   
   // status
   private _initializingView = false;
@@ -282,20 +283,20 @@ class MenuContainerController {
   //private _x: number = 0;
   //private _y: number = 0;
   
-  private _currentItem: MenuItemController | null = null;
+  private _currentItem: MenuItemController<CTX> | null = null;
   private _mouseOverItemTimeoutId: any = 0;
   private _closingCurrentChildTimeoutId: any = 0;
   private _mouseStayOutSubmenuTimeoutId: number = 0;
   private _mouseStayTime = 500;
   private _mouseStayoutSubmenuTime = 500;
-  private _lastMouseDownedItem: MenuItemController | null = null;
+  private _lastMouseDownedItem: MenuItemController<CTX> | null = null;
 
   private _direction = 1;
   private _pos?: PopupPosition;
   private _viewPosition: ViewPosition | null = null;
   private _currentChildPositionClassText: string = '';
 
-  private _modelEventMananger: MenuModelEventManager;
+  private _modelEventMananger: MenuModelEventManager<CTX>;
   private _disposed = false;
   /**
    * Creates an instance of MenuContainerController.
@@ -303,19 +304,19 @@ class MenuContainerController {
    * @param {(any | MenuItemController)} [ctx] - it is MenuItemController if it is created by parent MenuItemController, otherwise it is a root context.
    * @memberof MenuContainerController
    */
-  constructor(param: MenuRootController | MenuItemController, ctx?: any, pos?: PopupPosition) {
+  constructor(param: MenuRootController<CTX> | MenuItemController<CTX>, ctx: CTX, pos?: PopupPosition, rootWindow?: Window) {
     // when param is MenuRootController, this is a root menu. otherwise, the MenuItemController is a parent menu item of this.
     if( param instanceof MenuRootController ) {
       this._model = param.getModel();
       this._rootCtrl = param;
-      this._ctx = ctx;
+      this._ctx = ctx as CTX;
     }
     // it has a parent container
     else {
       this._parentItem = param;
       this._parent = this._parentItem.getContainer();
-      this._model = this._parentItem.getModel() as MenuSubmenu;
-      this._rootCtrl = this._parent.getRootController();
+      this._model = this._parentItem.getModel() as MenuSubmenu<CTX>;
+      this._rootCtrl = this._parent!.getRootController();
     }
     this._pos = pos;
 
@@ -323,27 +324,27 @@ class MenuContainerController {
 
     // only root menu observes window.document's events
     if( !this._parent ) {
-      this._evaBaseDoc = new EventAttacher(document, undefined, IE_Version.MSIE === 11); // use addEvenetListener if HTA is running on IE11 mode
+      this._evaBaseDoc = new EventAttacher(rootWindow?.document || document, undefined, IE_Version.MSIE === 11); // use addEvenetListener if HTA is running on IE11 mode
     }
 
     this._modelEventMananger = new MenuModelEventManager(this._model);
     
-    this._model.fireUserEvent('beforeload', new MenuUserEventObject('beforeload', this));
+    this._model.fireUserEvent('beforeload', ctx, new MenuUserEventObject('beforeload', this));
 
     // do not to catch window initializing error when dev mode
     DEV: {
       console.time('createView');
-      this._createView(pos);
+      this._createView(pos, rootWindow);
       console.timeEnd('createView');
-      this._model.fireUserEvent('load', new MenuUserEventObject('load', this));
+      this._model.fireUserEvent('load', ctx, new MenuUserEventObject('load', this));
       return;
     }
     
     // catch an error during initializing the view window when in production mode
     PROD:
     try {
-      this._createView(pos!);
-      this._model.fireUserEvent('load', new MenuUserEventObject('load', this));
+      this._createView(pos!, rootWindow);
+      this._model.fireUserEvent('load', ctx, new MenuUserEventObject('load', this));
     } catch(e: any) {
       console.log(`failed to initialize a new modeless window\n${e.message}`, 'red');
       this._parentItem = null as any;
@@ -356,7 +357,7 @@ class MenuContainerController {
     }
   }
 
-  private _createView(pos: PopupPosition): void {
+  private _createView(pos: PopupPosition, rootWindow?: Window): void {
     console.log(`${this.$L()}#_createView`, 'green');
     this._currentItem = null;
     
@@ -378,7 +379,7 @@ class MenuContainerController {
     // get new view
     console.time('testTime');
     try {
-      this._view = new MenuDialogView((this._parentItem && this._parentItem.getModel().getIndex() + 1 || 0), this._parent?.getView(), this._model.getCustomDialogClass());
+      this._view = new MenuDialogView((this._parentItem && this._parentItem.getModel().getIndex() + 1 || 0), this._parent?.getView(), this._model.getCustomDialogClass(), rootWindow);
       this._setViewDOMEvents(this._view);
     } catch(e: any) {
       DEV: {
@@ -653,9 +654,9 @@ class MenuContainerController {
     return this._viewPosition;
   }
 
-  private _createItems(submenuModel: MenuSubmenu) {
+  private _createItems(submenuModel: MenuSubmenu<CTX>) {
     console.log(`${this.$L()}#_createItems`, 'green');
-    const models = this._model.produceItems<MenuUserEventObject>(new MenuUserEventObject('demand', this));
+    const models = this._model.produceItems(new MenuUserEventObject('demand', this));
     this._items.length = 0;
     let itemNumber = 1;
 
@@ -763,7 +764,7 @@ class MenuContainerController {
   isReadyToUse() {
     return this?._view?.isReadyToUse();
   }
-  getChild(): MenuContainerController | null {
+  getChild(): MenuContainerController<CTX> | null {
     return this._child;
   }
 
@@ -780,13 +781,13 @@ class MenuContainerController {
   getBasedItemController() {
     return this._parentItem;
   }
-  isCurrentOpenedChildSubmenuItem(item: MenuItemController) {
+  isCurrentOpenedChildSubmenuItem(item: MenuItemController<CTX>) {
     return this._child?.isAvailable() && this._child.getBasedItemController() === item;
   }
   getLastMouseDownedItem() {
     return this._lastMouseDownedItem;
   }
-  setLastMouseDownedItem(item: MenuItemController) {
+  setLastMouseDownedItem(item: MenuItemController<CTX>) {
     return this._lastMouseDownedItem = item;
   }
 
@@ -802,7 +803,7 @@ class MenuContainerController {
    * @return {*} 
    * @memberof MenuContainerController
    */
-  openSubmenu(item: MenuItemController) {
+  openSubmenu(item: MenuItemController<CTX>) {
     console.log(`${this.$L()}#openSubmenu`, "green");
     
     // check 2 times to make sure that it does not have a child
@@ -854,8 +855,8 @@ class MenuContainerController {
     
     // create child instance
     this.getRootController().setLocked(true);
-    const child = new MenuContainerController(item, null, {base:'item', posX:'right-out', marginLeft, marginRight});
-    if( child instanceof MenuContainerController ) {
+    const child = new MenuContainerController<CTX>(item, this._ctx, {base:'item', posX:'right-out', marginLeft, marginRight});
+    if( child instanceof MenuContainerController<CTX> ) {
       this._child = child;
       this.getRootController().setLastChild(child);
       const cpos = child.getViewPosition();
@@ -891,7 +892,7 @@ class MenuContainerController {
    * @return {*} 
    * @memberof MenuItemController
    */
-  checkAvailabilityBeforeCall(callback: (...args:any[]) => any, _this?: MenuItemController) {
+  checkAvailabilityBeforeCall(callback: (...args:any[]) => any, _this?: MenuItemController<CTX>) {
     return (...args: any[]) => {
       if( !this.isAvailable() || !this.isReadyToUse() )
         return;
@@ -1094,7 +1095,7 @@ class MenuContainerController {
   getElementsByName(name: string) {
     //return this._document?.getElementsByName(name);
   }
-  getNextMenuItem(plus: number, current?: MenuItemController): MenuItemController | null {
+  getNextMenuItem(plus: number, current?: MenuItemController<CTX>): MenuItemController<CTX> | null {
     var items = this._items;
     
     var startItem = current || this._currentItem;
@@ -1121,7 +1122,7 @@ class MenuContainerController {
     return null;
   }
 
-  setCurrentItem(item: MenuItemController, activateMouseStay?: boolean) {
+  setCurrentItem(item: MenuItemController<CTX>, activateMouseStay?: boolean) {
     const model = item?.getModel();
 
     if( !this.getView()?.isAvailable() )
@@ -1153,7 +1154,7 @@ class MenuContainerController {
         item.getView()?.setViewFlag('highlight', true);
         this._view?.setBodyViewFlagByItem('highlight', true, item.getView()?.getItemNumber()||0, model.getCustomClassNames());
         
-        model.fireUserEvent('highlight', new MenuUserEventObject('highlight', this));
+        model.fireUserEvent('highlight', this.getContext(), new MenuUserEventObject('highlight', this));
       }
       this._hookToCloseCurrentChild(item);
     }
@@ -1180,7 +1181,7 @@ class MenuContainerController {
       this._hookMouseStay(item, this._view!);
     }
   }
-  private _hookMouseStay(stayingItem: MenuItemController, view: MenuDialogView, time?: number) {
+  private _hookMouseStay(stayingItem: MenuItemController<CTX>, view: MenuDialogView, time?: number) {
     //console.log(`${item.getModel().$L()} mousestay1`, "red");
     this._clearMouseStayTimeout();
     this._mouseOverItemTimeoutId = window.setTimeout(() => {
@@ -1217,7 +1218,7 @@ class MenuContainerController {
    * @return {*} 
    * @memberof MenuContainerController
    */
-  private _hookToCloseCurrentChild(item: MenuItemController) {
+  private _hookToCloseCurrentChild(item: MenuItemController<CTX>) {
     if( this.isCurrentOpenedChildSubmenuItem(item) || this._closingCurrentChildTimeoutId )
       return;
 
@@ -1363,14 +1364,14 @@ class MenuContainerController {
       }
     }
 
-    this._model.fireUserEvent('unload', new MenuUserEventObject('unload', this));
+    this._model.fireUserEvent('unload', this.getContext(), new MenuUserEventObject('unload', this));
     if( this._parent ) {
       if( !this._parent.isDisposed() ) {
         this._parent.setTopMost();
       }
     }
     else {
-      this._model.fireUserEvent('_rootclose', new MenuUserEventObject('_rootclose', this));
+      this._model.fireUserEvent('_rootclose', this.getContext(), new MenuUserEventObject('_rootclose', this));
     }
 
     if( this._model.isPopup() ) {
@@ -1407,7 +1408,7 @@ class MenuContainerController {
 /*
  * variables for double click
  */
-let prevDblclickItem: MenuItemController | null = null;
+let prevDblclickItem: MenuItemController<any> | null = null;
 let prevDblclickTime = 0;
 
 /**
@@ -1415,13 +1416,13 @@ let prevDblclickTime = 0;
  * @class MenuItemController
  * @implements {LoggerInterface}
  */
-class MenuItemController {
-  private _model: MenuModelItem;
-  private _container: MenuContainerController;
+class MenuItemController<CTX> {
+  private _model: MenuModelItem<CTX>;
+  private _container: MenuContainerController<CTX>;
   private _view?: MenuItemView;
-  private _modelEventMananger: MenuModelEventManager;
+  private _modelEventMananger: MenuModelEventManager<CTX>;
   
-  constructor(model: MenuModelItem, container: MenuContainerController, view: MenuItemView /*, itemNumber: number*/) {
+  constructor(model: MenuModelItem<CTX>, container: MenuContainerController<CTX>, view: MenuItemView /*, itemNumber: number*/) {
     this._model = model;
     this._modelEventMananger = new MenuModelEventManager(model);
     this._container = container;
@@ -1431,7 +1432,7 @@ class MenuItemController {
     this._setItemEvents();
     this._prepareModel(model);
   }
-  private _prepareModel(model: MenuModelItem) {
+  private _prepareModel(model: MenuModelItem<CTX>) {
     if( model.isCheckable() ) {
       model.updateCheckedStatByRecord();
     }
@@ -1581,12 +1582,12 @@ class MenuItemController {
     if( type === 'radio' && model.isRadio() || type === 'checkbox' && model.isCheckbox() ) {
       if( model.setChecked() ) {
         const changeEvObj = new MenuUserEventObject('change', this);
-        queue.next(() => model.fireUserEvent('change', changeEvObj));
+        queue.next(() => model.fireUserEvent('change', this.getContainer().getContext(), changeEvObj));
       }
     }
     
     // execute onclick or ondblclick
-    model.fireUserEvent(clicktype, clickEvObj);
+    model.fireUserEvent(clicktype, this.getContainer().getContext(), clickEvObj);
 
     let flashing = false;
     if( !model.isSubmenu() ) {
@@ -1619,7 +1620,7 @@ class MenuItemController {
             }
           }
 
-          queue.next(() => model.fireUserEvent('close', closeEvObj));
+          queue.next(() => model.fireUserEvent('close', this.getContainer().getContext(), closeEvObj));
         });
       }
     }
@@ -1633,7 +1634,7 @@ class MenuItemController {
       }
 
       // fire acitvate event
-      model.fireUserEvent('activate', activateEvObj);
+      model.fireUserEvent('activate', this.getContainer().getContext(), activateEvObj);
       root.setLocked(false);
       root = null as any;
     });
@@ -1690,13 +1691,13 @@ class MenuItemController {
 
 
 
-class MenuModelEventManager {
-  private _model: MenuModelItem;
+class MenuModelEventManager<CTX> {
+  private _model: MenuModelItem<CTX>;
   private _hookedModelEventIds: {handler: string, id: number}[] = [];
-  constructor(model: MenuModelItem) {
+  constructor(model: MenuModelItem<CTX>) {
     this._model = model;
   }
-  add(handler:Parameters<MenuModelItem["addMenuModelEvent"]>[0], callback: Function) {
+  add(handler:Parameters<MenuModelItem<CTX>["addMenuModelEvent"]>[0], callback: Function) {
     const id = this._model.addMenuModelEvent(handler, callback);
     this._hookedModelEventIds.push({handler, id});
   }
@@ -1719,9 +1720,10 @@ class MenuModelEventManager {
  * each user event interacts with menu items through this wrapper.
  * this event object is passed as a first argument to each event handler.
  */
-class MenuUserEventObject implements MenuUserEventObjectModel {
-  ctx: any;
-  target: MenuContainerUI | MenuItemUI;
+class MenuUserEventObject<CTX> implements MenuUserEventObjectModel {
+  ctx: CTX;
+  srcContext: CTX;
+  target: MenuContainerUI<CTX> | MenuItemUI<CTX>;
 
   readonly type: MenuItemUserEventNames;
   readonly index?: number;
@@ -1732,12 +1734,13 @@ class MenuUserEventObject implements MenuUserEventObjectModel {
   value?: any;
   cancelGlobal: boolean = false;
 
-  constructor(type: MenuItemUserEventNames, ctrl: MenuContainerController | MenuItemController) {
+  constructor(type: MenuItemUserEventNames, ctrl: MenuContainerController<CTX> | MenuItemController<CTX>) {
     this.type = type;
     
     const model = ctrl.getModel();
     if( ctrl instanceof MenuItemController ) {
       this.ctx = ctrl.getContainer().getContext();
+      this.srcContext = this.ctx;
       this.target = new MenuItemUI(ctrl);
       this.id = model.getId();
       this.index = model.getIndex();
@@ -1751,6 +1754,7 @@ class MenuUserEventObject implements MenuUserEventObjectModel {
     }
     else {
       this.ctx = ctrl.getContext();
+      this.srcContext = this.ctx;
       this.target = new MenuContainerUI(ctrl);
     }
   }
@@ -1759,6 +1763,7 @@ class MenuUserEventObject implements MenuUserEventObjectModel {
     if( !this.target )
       return; // disposed already
     this.ctx = null as any;
+    this.srcContext = null as any;
     this.target.dispose();
     this.target = null as any;
     this.value = null as any;
@@ -1774,8 +1779,8 @@ abstract class _MenuUI<T> {
     this._ctrl = null as any;
   }
 }
-class MenuContainerUI extends _MenuUI<MenuContainerController> {
-  constructor(ctrl: MenuContainerController) {
+class MenuContainerUI<CTX> extends _MenuUI<MenuContainerController<CTX>> {
+  constructor(ctrl: MenuContainerController<CTX>) {
     super(ctrl);
   }
   loadSkin(css: string, root = false) {
@@ -1795,11 +1800,11 @@ class MenuContainerUI extends _MenuUI<MenuContainerController> {
     */
   }
 }
-class MenuItemUI extends _MenuUI<MenuItemController> {
-  constructor(ctrl: MenuItemController) {
+class MenuItemUI<CTX> extends _MenuUI<MenuItemController<CTX>> {
+  constructor(ctrl: MenuItemController<CTX>) {
     super(ctrl);
   }
-  getContainer(): MenuContainerUI {
+  getContainer(): MenuContainerUI<CTX> {
     return new MenuContainerUI(this._ctrl.getContainer());
   }
   setLabel(text: string, asHtml?: boolean) {
@@ -1828,4 +1833,4 @@ class MenuItemUI extends _MenuUI<MenuItemController> {
 
 
 
-export { MenuRootController }
+export { MenuRootController, MenuUserEventObject }
