@@ -1,15 +1,16 @@
 declare type MenuModelEventNames = 'label' | 'icon' | 'arrow' | 'class' | 'checked' | 'disabled' | 'unselectable' | 'css';
 declare type MenuItemUserEventNames = 'activate' | 'click' | 'close' | 'change' | 'dblclick' | 'highlight' | 'beforeload' | 'load' | 'unload' | '_rootclose' | '_viewready' | 'demand';
 declare type MenuGlobalEventNames = 'highlight' | 'click' | 'dblclick' | 'activate';
-declare type MenuGlobalEventsTypeForUser = {
-    [P in MenuGlobalEventNames as `on${P}`]?: UserEventListener;
+declare type MenuGlobalEventsTypeForUser<CTX> = {
+    [P in MenuGlobalEventNames as `on${P}`]?: UserEventListener<CTX>;
 };
 declare const AllMenuTypesList: readonly ["normal", "radio", "checkbox", "separator", "submenu", "popup", "demand", "radios"];
 declare type AllMenuTypes = typeof AllMenuTypesList[number];
 declare const MenuItemTypesList: readonly ["normal", "radio", "checkbox", "separator", "submenu", "popup"];
 declare type MenuItemTypes = typeof MenuItemTypesList[number];
-declare type MenuItemParameter = MenuItemNormalParameter | MenuItemCheckboxParameter | MenuItemRadioParameter | MenuItemSubmenuParameter | MenuItemSeparatorParameter | MenuItemPopupParameter;
-interface MenuItemNormalParameter {
+declare type MenuItemParameter<CTX> = MenuItemNormalParameter<CTX> | MenuItemCheckboxParameter<CTX> | MenuItemRadioParameter<CTX> | MenuItemSubmenuParameter<CTX> | MenuItemSeparatorParameter | MenuItemPopupParameter<CTX>;
+declare type UserEventListener<CTX> = (ev: MenuUserEventObject<CTX>, ctx: CTX) => any;
+interface MenuItemNormalParameter<CTX> {
     type?: 'normal';
     label: string;
     html?: boolean;
@@ -17,10 +18,10 @@ interface MenuItemNormalParameter {
     customClass?: string;
     title?: string;
     id?: string;
-    onclick?: UserEventListener;
-    ondblclick?: UserEventListener;
-    onhighlight?: UserEventListener;
-    onactivate?: UserEventListener;
+    onclick?: UserEventListener<CTX>;
+    ondblclick?: UserEventListener<CTX>;
+    onhighlight?: UserEventListener<CTX>;
+    onactivate?: UserEventListener<CTX>;
     ignoreGlobalEvents?: boolean;
     ignoreErrors?: boolean;
     disabled?: boolean;
@@ -32,24 +33,24 @@ interface MenuItemNormalParameter {
     holdParent?: boolean;
     flash?: number;
 }
-interface _MenuItemCheckableParameter extends Omit<MenuItemNormalParameter, 'icon' | 'type'> {
+interface _MenuItemCheckableParameter<CTX> extends Omit<MenuItemNormalParameter<CTX>, 'icon' | 'type'> {
     name?: string;
     global?: boolean;
     checked?: boolean;
     value?: any;
     record?: CheckableRecord;
-    onchange?: UserEventListener;
+    onchange?: UserEventListener<CTX>;
 }
-interface MenuItemCheckboxParameter extends _MenuItemCheckableParameter {
+interface MenuItemCheckboxParameter<CTX> extends _MenuItemCheckableParameter<CTX> {
     type: 'checkbox';
     checkboxIcon?: CheckableIconPairParam;
 }
-interface MenuItemRadioParameter extends _MenuItemCheckableParameter {
+interface MenuItemRadioParameter<CTX> extends _MenuItemCheckableParameter<CTX> {
     type: 'radio';
     radioIcon?: CheckableIconPairParam;
     uncheckable?: boolean;
 }
-interface MenuItemRadioGroupParameter extends Omit<MenuItemRadioParameter, 'type' | 'value' | 'checked' | 'label'> {
+interface MenuItemRadioGroupParameter<CTX> extends Omit<MenuItemRadioParameter<CTX>, 'type' | 'value' | 'checked' | 'label'> {
     type: 'radios';
     selectedIndex?: number;
     labels: string[] | // labels
@@ -58,16 +59,16 @@ interface MenuItemRadioGroupParameter extends Omit<MenuItemRadioParameter, 'type
         any?,
         boolean?
     ][] | // [label, value, checked]
-    Omit<MenuItemRadioParameter, 'type' | 'name'>[];
+    Omit<MenuItemRadioParameter<CTX>, 'type' | 'name'>[];
 }
 declare type CheckableRecord = {
     checked?: boolean;
     value?: any;
     selectedIndex?: number;
 };
-interface MenuItemSubmenuParameter extends Omit<MenuItemNormalParameter, 'type'> {
+interface MenuItemSubmenuParameter<CTX> extends Omit<MenuItemNormalParameter<CTX>, 'type'> {
     type: 'submenu';
-    items: MenuItemsCreateParameter[];
+    items: MenuItemsCreateParameter<CTX>[];
     customDialogClass?: string;
     skin?: string;
     cssText?: string;
@@ -79,10 +80,10 @@ interface MenuItemSubmenuParameter extends Omit<MenuItemNormalParameter, 'type'>
     flashItems?: boolean | number;
     leftMargin?: number;
     childLeftMargin?: number;
-    onload?: UserEventListener;
-    onbeforeload?: UserEventListener;
-    onunload?: UserEventListener;
-    globalEvents?: MenuGlobalEventsTypeForUser;
+    onload?: UserEventListener<CTX>;
+    onbeforeload?: UserEventListener<CTX>;
+    onunload?: UserEventListener<CTX>;
+    globalEvents?: MenuGlobalEventsTypeForUser<CTX>;
     autoClose?: boolean;
     inherit?: SubmenuInheritanceFlags | boolean;
 }
@@ -114,7 +115,7 @@ interface PopupMargin {
 }
 interface PopupPosition extends PopupBase, PopupMargin {
 }
-interface MenuItemPopupParameter extends Omit<MenuItemSubmenuParameter, 'type'> {
+interface MenuItemPopupParameter<CTX> extends Omit<MenuItemSubmenuParameter<CTX>, 'type'> {
     type: 'popup';
     pos?: PopupPosition;
     exclusive?: boolean;
@@ -124,11 +125,11 @@ interface MenuItemSeparatorParameter {
     id?: string;
     customClass?: string;
 }
-declare type MenuItemsCreateParameter = MenuItemParameter | MenuItemDemandParameter | MenuItemRadioGroupParameter;
-interface MenuItemDemandParameter {
+declare type MenuItemsCreateParameter<CTX> = MenuItemParameter<CTX> | MenuItemDemandParameter<CTX> | MenuItemRadioGroupParameter<CTX>;
+interface MenuItemDemandParameter<CTX> {
     type: 'demand';
     id?: string;
-    ondemand: (...args: any[]) => MenuItemsCreateParameter | MenuItemsCreateParameter[] | null | undefined;
+    ondemand: (ev: MenuUserEventObject<CTX>, ctx: CTX) => MenuItemsCreateParameter<CTX> | MenuItemsCreateParameter<CTX>[] | null | undefined;
 }
 declare type IconSettingType = string | {
     path: string;
@@ -143,7 +144,6 @@ declare type IconSettingType = string | {
 };
 declare type CheckableIconPair = [IconSettingType, IconSettingType];
 declare type CheckableIconPairParam = CheckableIconPair | IconSettingType;
-declare type UserEventListener = (...args: any[]) => any;
 interface MenuUserEventObjectModel {
     cancelGlobal: boolean;
     dispose(): void;
@@ -167,20 +167,20 @@ declare type MenuItemFlagsType = {
  * @abstract
  * @class _MenuModelBase
  */
-declare abstract class _MenuModelBase {
+declare abstract class _MenuModelBase<CTX> {
     /**
      * @type {AllMenuTypes}
      */
     protected abstract _type: AllMenuTypes;
     protected readonly _uniqueId: string;
     protected readonly _id?: string;
-    protected _parent?: MenuSubmenu;
+    protected _parent?: MenuSubmenu<CTX>;
     protected _index: number;
     protected _customClassNames: string[];
     protected _isDynamicallyProduced: boolean;
-    constructor(args: MenuItemsCreateParameter, parent?: MenuSubmenu, demanded?: boolean);
+    constructor(args: MenuItemsCreateParameter<CTX>, parent?: MenuSubmenu<CTX>, demanded?: boolean);
     protected _unexpectedTypeError(): void;
-    getType(this: MenuModelItem): MenuItemTypes;
+    getType(this: MenuModelItem<CTX>): MenuItemTypes;
     getId(): string | undefined;
     getUniqueId(): string;
     getCustomClassNames(): string[];
@@ -190,7 +190,7 @@ declare abstract class _MenuModelBase {
     getIndex(): number;
     setIndex(num: number): number;
     isDynamicallyProduced(): boolean;
-    protected getRealParentSubmenu(): MenuSubmenu | null;
+    protected getRealParentSubmenu(): MenuSubmenu<CTX> | null;
     private _menuModelEventListeners;
     private _listenerIdCounter;
     /**
@@ -206,14 +206,14 @@ declare abstract class _MenuModelBase {
      * @param {string} handler
      */
     fireMenuModelEvent(handler: MenuModelEventNames, ...args: any): void;
-    isNormal(): this is MenuNormal;
-    isSubmenu(): this is MenuSubmenu;
-    isPopup(): this is MenuPopup;
-    isCheckable(): this is _MenuCheckable;
-    isRadio(): this is MenuRadio;
-    isCheckbox(): this is MenuCheckbox;
-    isSeparator(): this is MenuSeparator;
-    isDemandable(): this is MenuDemand;
+    isNormal(): this is MenuNormal<CTX>;
+    isSubmenu(): this is MenuSubmenu<CTX>;
+    isPopup(): this is MenuPopup<CTX>;
+    isCheckable(): this is _MenuCheckable<CTX>;
+    isRadio(): this is MenuRadio<CTX>;
+    isCheckbox(): this is MenuCheckbox<CTX>;
+    isSeparator(): this is MenuSeparator<CTX>;
+    isDemandable(): this is MenuDemand<CTX>;
     $L(): string;
     dispose(): void;
 }
@@ -222,7 +222,7 @@ declare abstract class _MenuModelBase {
  * @class MenuNormal
  * @extends {_MenuModelBase}
  */
-declare class MenuNormal extends _MenuModelBase {
+declare class MenuNormal<CTX> extends _MenuModelBase<CTX> {
     protected readonly _type: AllMenuTypes;
     protected _label: string;
     protected _useHTML: boolean;
@@ -236,21 +236,18 @@ declare class MenuNormal extends _MenuModelBase {
     protected _unholdByDblclick: boolean;
     protected _holdParent: boolean;
     protected _flash: number;
-    protected onclick?: UserEventListener;
-    protected ondblclick?: UserEventListener;
-    protected onhighlight?: UserEventListener;
-    protected onactivate?: UserEventListener;
+    protected onclick?: UserEventListener<CTX>;
+    protected ondblclick?: UserEventListener<CTX>;
+    protected onhighlight?: UserEventListener<CTX>;
+    protected onactivate?: UserEventListener<CTX>;
     protected _ignoreGlobalEvents: boolean;
     protected _ignoreErrors: boolean;
     protected _selected: boolean;
-    constructor(args: MenuItemNormalParameter, parent?: MenuSubmenu, demanded?: boolean);
+    constructor(args: MenuItemNormalParameter<CTX>, parent?: MenuSubmenu<CTX>, demanded?: boolean);
     /**
      * fire user events such as onclick, onchange, etc
-     * @param {MenuItemUserEventNames} handler
-     * @param {...any[]} args
-     * @memberof MenuNormal
      */
-    fireUserEvent(handler: MenuItemUserEventNames, eventObj: MenuUserEventObjectModel): void;
+    fireUserEvent(handler: MenuItemUserEventNames, ctx: CTX, eventObj: MenuUserEventObject<CTX>): void;
     setLabel(label: string, asHtml?: boolean): void;
     getLabel(asHtml?: boolean): string;
     setIcon(icon: IconSettingType): void;
@@ -271,21 +268,21 @@ declare class MenuNormal extends _MenuModelBase {
  * @class MenuCheckable
  * @extends {MenuNormal}
  */
-declare abstract class _MenuCheckable extends MenuNormal {
+declare abstract class _MenuCheckable<CTX> extends MenuNormal<CTX> {
     protected abstract readonly _type: 'checkbox' | 'radio';
-    protected _parent: MenuSubmenu;
+    protected _parent: MenuSubmenu<CTX>;
     protected _name: string;
     protected _isNamed: boolean;
     protected _global: boolean;
-    protected _recordSubmenu: MenuSubmenu;
+    protected _recordSubmenu: MenuSubmenu<CTX>;
     protected _record: CheckableRecord;
     protected _checked: boolean;
     protected _value?: any;
     protected _previousChecked?: boolean;
     protected _defaultPairIcons: CheckableIconPair;
     protected _pairIcons: CheckableIconPair | null;
-    onchange?: UserEventListener;
-    constructor(args: MenuItemRadioParameter | MenuItemCheckboxParameter, parent: MenuSubmenu, demanded?: boolean);
+    onchange?: UserEventListener<CTX>;
+    constructor(args: MenuItemRadioParameter<CTX> | MenuItemCheckboxParameter<CTX>, parent: MenuSubmenu<CTX>, demanded?: boolean);
     updateCheckableIcon(force?: boolean): void;
     abstract updateCheckedStatByRecord(): void;
     getFlags(): MenuItemFlagsType;
@@ -295,24 +292,24 @@ declare abstract class _MenuCheckable extends MenuNormal {
     isChecked(): boolean;
     isGlobal(): boolean;
     getRecord(): CheckableRecord;
-    getRecordRopository(): MenuSubmenu;
+    getRecordRopository(): MenuSubmenu<CTX>;
     setIcon(icon: CheckableIconPairParam | null, apply?: boolean): void;
     hasUsersIcon(): boolean;
     protected abstract _setChecked(flag?: boolean, fromPublic?: boolean): boolean;
     setChecked(flag?: boolean): boolean;
 }
-declare class MenuCheckbox extends _MenuCheckable {
+declare class MenuCheckbox<CTX> extends _MenuCheckable<CTX> {
     protected readonly _type = "checkbox";
-    constructor(args: MenuItemCheckboxParameter, parent: MenuSubmenu, demanded?: boolean);
+    constructor(args: MenuItemCheckboxParameter<CTX>, parent: MenuSubmenu<CTX>, demanded?: boolean);
     protected _setChecked(flag: boolean, fromPublic?: boolean): boolean;
     private _linkOtherCheckboxesInParents;
     updateCheckedStatByRecord(): void;
 }
-declare class MenuRadio extends _MenuCheckable {
+declare class MenuRadio<CTX> extends _MenuCheckable<CTX> {
     protected readonly _type = "radio";
     readonly _radioIndex: number;
     private _uncheckable;
-    constructor(args: MenuItemRadioParameter, parent: MenuSubmenu, demanded?: boolean);
+    constructor(args: MenuItemRadioParameter<CTX>, parent: MenuSubmenu<CTX>, demanded?: boolean);
     getRadioIndex(): number;
     isUncheckable(): boolean;
     protected _setChecked(flag: boolean, fromPublic?: boolean): boolean;
@@ -330,26 +327,26 @@ declare class MenuRadio extends _MenuCheckable {
  * @class MenuDemand
  * @extends {_MenuModelBase}
  */
-declare class MenuDemand extends _MenuModelBase {
+declare class MenuDemand<CTX> extends _MenuModelBase<CTX> {
     protected readonly _type = "demand";
-    protected readonly ondemand: MenuItemDemandParameter["ondemand"];
-    constructor(args: MenuItemDemandParameter, parent?: MenuSubmenu, demanded?: boolean);
+    protected readonly ondemand: MenuItemDemandParameter<CTX>["ondemand"];
+    constructor(args: MenuItemDemandParameter<CTX>, parent?: MenuSubmenu<CTX>, demanded?: boolean);
     /**
      * execute the ondemand callback
      * @param {*} [eventObj]
      * @return {*}  {MenuItemsCreateParameter[]}
      * @memberof MenuDemand
      */
-    extract<T>(eventObj: T): MenuItemsCreateParameter[];
+    extract(eventObj: MenuUserEventObject<CTX>): MenuItemsCreateParameter<CTX>[];
 }
 /**
  * for a separator
  * @class MenuSeparator
  * @extends {_MenuModelBase}
  */
-declare class MenuSeparator extends _MenuModelBase {
+declare class MenuSeparator<CTX> extends _MenuModelBase<CTX> {
     protected readonly _type = "separator";
-    constructor(param: MenuItemSeparatorParameter, parent?: MenuSubmenu, demanded?: boolean);
+    constructor(param: MenuItemSeparatorParameter, parent?: MenuSubmenu<CTX>, demanded?: boolean);
 }
 /**
  * MenuSubmenu contains all other menu items includes MenuSubmenu itself.
@@ -357,7 +354,7 @@ declare class MenuSeparator extends _MenuModelBase {
  * @class SubmenuItem
  * @extends {_MenuModelBase}
  */
-declare class MenuSubmenu extends MenuNormal {
+declare class MenuSubmenu<CTX> extends MenuNormal<CTX> {
     protected readonly _type = "submenu";
     private _pre_items;
     private _items;
@@ -376,15 +373,15 @@ declare class MenuSubmenu extends MenuNormal {
     private _fontFamily?;
     private _checkablePairIcons;
     private _arrowIcon;
-    onload?: UserEventListener;
-    onbeforeload?: UserEventListener;
-    onunload?: UserEventListener;
-    _onrootclose?: UserEventListener;
-    _onviewready?: UserEventListener;
+    onload?: UserEventListener<CTX>;
+    onbeforeload?: UserEventListener<CTX>;
+    onunload?: UserEventListener<CTX>;
+    _onrootclose?: UserEventListener<CTX>;
+    _onviewready?: UserEventListener<CTX>;
     private _globalEvents?;
     private _disableAutoClose?;
     private _inherit;
-    constructor(param: MenuItemSubmenuParameter | MenuItemPopupParameter, parent?: MenuSubmenu, demanded?: boolean);
+    constructor(param: MenuItemSubmenuParameter<CTX> | MenuItemPopupParameter<CTX>, parent?: MenuSubmenu<CTX>, demanded?: boolean);
     /**
      * create pre-items
      * MenuDemand items are not extracted yet at this time
@@ -400,7 +397,7 @@ declare class MenuSubmenu extends MenuNormal {
      * @return {*}
      * @memberof MenuSubmenu
      */
-    produceItems<T>(eventObj: T): MenuModelItem[];
+    produceItems(eventObj: MenuUserEventObject<CTX>): MenuModelItem<CTX>[];
     /**
      * set records for MenuCheckable items.
      * @param {string} name
@@ -417,15 +414,15 @@ declare class MenuSubmenu extends MenuNormal {
     setUserObjectAsRecord(name: string, record: CheckableRecord, global?: boolean): void;
     resetRadioIndex(): void;
     countRadioIndex(name?: string, global?: boolean): number;
-    protected getItems(): MenuModelItem[];
-    getParent(): MenuSubmenu | null;
+    protected getItems(): MenuModelItem<CTX>[];
+    getParent(): MenuSubmenu<CTX> | null;
     isRoot(): boolean;
-    getRoot(): MenuSubmenu;
+    getRoot(): MenuSubmenu<CTX>;
     getLayer(): number;
     setSkin(css: string): void;
     getSkin(): string;
     getCSSText(): string;
-    getGlobalEvent(handler: MenuItemUserEventNames): UserEventListener | null;
+    getGlobalEvent(handler: MenuItemUserEventNames): UserEventListener<CTX> | null;
     getChildLeftMargin(): number | undefined;
     getArrowIcon(): IconSettingType;
     getDefaultCheckableIcon(type: 'checkbox' | 'radio'): CheckableIconPair | undefined;
@@ -437,17 +434,17 @@ declare class MenuSubmenu extends MenuNormal {
     /**
      * enumerate items
      */
-    each(callback: (item: MenuModelItem, index?: number) => void): void;
-    getItem(index: number): MenuModelItem;
+    each(callback: (item: MenuModelItem<CTX>, index?: number) => void): void;
+    getItem(index: number): MenuModelItem<CTX>;
     getItemCount(): number;
-    getItemById(id: any): MenuModelItem | null;
-    getItemsByName(name: string): _MenuCheckable[];
-    getPreItems(): _MenuModelBase[];
+    getItemById(id: any): MenuModelItem<CTX> | null;
+    getItemsByName(name: string): _MenuCheckable<CTX>[];
+    getPreItems(): _MenuModelBase<CTX>[];
     getCustomDialogClass(): string;
-    __setSystemUserEvent(handler: '_rootclose' | '_viewready', callback: UserEventListener): void;
-    setGlobalEvent(handler: MenuGlobalEventNames, listener: EventListener | null): void;
+    __setSystemUserEvent(handler: '_rootclose' | '_viewready', callback: UserEventListener<CTX>): void;
+    setGlobalEvent(handler: MenuGlobalEventNames, listener: UserEventListener<CTX> | null): void;
     clearGlobalEvents(): void;
-    fireUserEvent(handler: '_rootclose' | '_viewready' | MenuItemUserEventNames, eventObj: MenuUserEventObjectModel): void;
+    fireUserEvent(handler: '_rootclose' | '_viewready' | MenuItemUserEventNames, ctx: CTX, eventObj: MenuUserEventObject<CTX>): void;
     dispose(): void;
 }
 /**
@@ -455,16 +452,16 @@ declare class MenuSubmenu extends MenuNormal {
  * @class MenuPopup
  * @extends {MenuSubmenu}
  */
-declare class MenuPopup extends MenuSubmenu {
+declare class MenuPopup<CTX> extends MenuSubmenu<CTX> {
     private _pos;
     private _exclusive;
-    constructor(param: MenuItemPopupParameter, parent?: MenuSubmenu, demanded?: boolean);
+    constructor(param: MenuItemPopupParameter<CTX>, parent?: MenuSubmenu<CTX>, demanded?: boolean);
     getPosObject(): PopupPosition;
 }
-declare abstract class _MenuModelable {
-    abstract getModel(): MenuSubmenu;
+declare abstract class _MenuModelable<CTX> {
+    abstract getModel(): MenuSubmenu<CTX>;
 }
-declare type MenuModelItem = MenuNormal | MenuSeparator;
+declare type MenuModelItem<CTX> = MenuNormal<CTX> | MenuSeparator<CTX>;
 
 /**
  * virtual DOM node to 0.0update at arbitrary timing
@@ -650,7 +647,7 @@ declare class MenuDialogView extends _ViewBase<MenuDialogView> {
     private _calculatedTableItemMargin;
     private _layer;
     private _SkinSystemSettings;
-    constructor(itemNumber: number, parent?: MenuDialogView | null, customClass?: string);
+    constructor(itemNumber: number, parent?: MenuDialogView | null, customClass?: string, specifiedParentWindow?: Window);
     private _initializeDialog;
     private _initializeStyleSheet;
     initLayout(): void;
@@ -761,29 +758,29 @@ declare type ViewPosition = {
     posY: PopupPosition["posY"];
     base: PopupPosition["base"];
 };
-declare abstract class _RootController extends _MenuModelable {
+declare abstract class _RootController<CTX> extends _MenuModelable<CTX> {
     protected _locked: number;
-    protected _lastChild?: MenuContainerController;
+    protected _lastChild?: MenuContainerController<CTX>;
     protected _enableOnlyLastChild: boolean;
     abstract open(...args: any): void;
     setLocked(flag: boolean): void;
-    isLocked(ctrl?: MenuContainerController): boolean;
-    setLastChild(ctrl: MenuContainerController): void;
+    isLocked(ctrl?: MenuContainerController<CTX>): boolean;
+    setLastChild(ctrl: MenuContainerController<CTX>): void;
     enableOnlyLastChild(flag?: boolean): void;
     move(x: number, y: number): void;
     getRootController(): this;
     abstract close(): void;
 }
-declare class MenuRootController extends _RootController {
-    protected _model: MenuSubmenu;
-    protected _ctrl: MenuContainerController | null;
+declare class MenuRootController<CTX> extends _RootController<CTX> {
+    protected _model: MenuSubmenu<CTX>;
+    protected _ctrl: MenuContainerController<CTX> | null;
     protected _readyToUse: boolean;
     protected _isUpdatingView: boolean;
-    constructor(param: MenuItemSubmenuParameter);
+    constructor(param: MenuItemSubmenuParameter<CTX>);
     /**
      * create controller and view
      */
-    open(x: number, y: number, ctx?: any): void;
+    open(x: number, y: number, ctx: CTX, parentWindow?: Window): void;
     /**
      * close View
      * @memberof MenuUserInterface
@@ -797,9 +794,9 @@ declare class MenuRootController extends _RootController {
         height: number;
     };
     getRectangleOfWholeMenus(): ClientRect;
-    getModel(): MenuSubmenu;
+    getModel(): MenuSubmenu<CTX>;
     loadSkin(path: string): void;
-    setGlobalEvent(handler: MenuGlobalEventNames, listener: EventListener | null): void;
+    setGlobalEvent(handler: MenuGlobalEventNames, listener: UserEventListener<CTX> | null): void;
     clearGlobalEvents(): void;
     destroy(): void;
 }
@@ -807,7 +804,7 @@ declare class MenuRootController extends _RootController {
  * core Menu controller
  * @class MenuContainerController
  */
-declare class MenuContainerController {
+declare class MenuContainerController<CTX> {
     private _model;
     private _view;
     private _items;
@@ -838,7 +835,7 @@ declare class MenuContainerController {
      * @param {(any | MenuItemController)} [ctx] - it is MenuItemController if it is created by parent MenuItemController, otherwise it is a root context.
      * @memberof MenuContainerController
      */
-    constructor(param: MenuRootController | MenuItemController, ctx?: any, pos?: PopupPosition);
+    constructor(param: MenuRootController<CTX> | MenuItemController<CTX>, ctx: CTX, pos?: PopupPosition, rootWindow?: Window);
     private _createView;
     private _calculatePosition;
     private _createItems;
@@ -848,16 +845,16 @@ declare class MenuContainerController {
     getView(): MenuDialogView | null;
     hasView(): boolean;
     getViewPosition(): ViewPosition | null;
-    getModel(): MenuSubmenu;
+    getModel(): MenuSubmenu<CTX>;
     isReadyToUse(): boolean | undefined;
-    getChild(): MenuContainerController | null;
-    getRootController(): MenuRootController;
+    getChild(): MenuContainerController<CTX> | null;
+    getRootController(): MenuRootController<CTX>;
     getContext(): any;
     getLayer(): number;
-    getBasedItemController(): MenuItemController | null;
-    isCurrentOpenedChildSubmenuItem(item: MenuItemController): boolean | undefined;
-    getLastMouseDownedItem(): MenuItemController | null;
-    setLastMouseDownedItem(item: MenuItemController): MenuItemController;
+    getBasedItemController(): MenuItemController<CTX> | null;
+    isCurrentOpenedChildSubmenuItem(item: MenuItemController<CTX>): boolean | undefined;
+    getLastMouseDownedItem(): MenuItemController<CTX> | null;
+    setLastMouseDownedItem(item: MenuItemController<CTX>): MenuItemController<CTX>;
     synchronize(): void;
     /**
      * create and open submenu
@@ -866,7 +863,7 @@ declare class MenuContainerController {
      * @return {*}
      * @memberof MenuContainerController
      */
-    openSubmenu(item: MenuItemController): null | undefined;
+    openSubmenu(item: MenuItemController<CTX>): null | undefined;
     setTopMost(): void;
     /**
      * check if the controller is alive before firing the callback
@@ -875,7 +872,7 @@ declare class MenuContainerController {
      * @return {*}
      * @memberof MenuItemController
      */
-    checkAvailabilityBeforeCall(callback: (...args: any[]) => any, _this?: MenuItemController): (...args: any[]) => void;
+    checkAvailabilityBeforeCall(callback: (...args: any[]) => any, _this?: MenuItemController<CTX>): (...args: any[]) => void;
     private _setViewDOMEvents;
     private _onMenuDragStart;
     private _onDocumentFocusOut;
@@ -898,8 +895,8 @@ declare class MenuContainerController {
     private _onPressAltF4;
     private _onDocumentMouseWheel;
     getElementsByName(name: string): void;
-    getNextMenuItem(plus: number, current?: MenuItemController): MenuItemController | null;
-    setCurrentItem(item: MenuItemController, activateMouseStay?: boolean): void;
+    getNextMenuItem(plus: number, current?: MenuItemController<CTX>): MenuItemController<CTX> | null;
+    setCurrentItem(item: MenuItemController<CTX>, activateMouseStay?: boolean): void;
     private _hookMouseStay;
     private _clearMouseStayTimeout;
     /**
@@ -911,7 +908,7 @@ declare class MenuContainerController {
      */
     private _hookToCloseCurrentChild;
     clearClosingCurrentChildTimeout(): void;
-    getCurrentItem(): MenuItemController | null;
+    getCurrentItem(): MenuItemController<CTX> | null;
     /**
      * set parent's currentItem as this submenu item
      * @memberof MenuContainerController
@@ -934,12 +931,12 @@ declare class MenuContainerController {
  * @class MenuItemController
  * @implements {LoggerInterface}
  */
-declare class MenuItemController {
+declare class MenuItemController<CTX> {
     private _model;
     private _container;
     private _view?;
     private _modelEventMananger;
-    constructor(model: MenuModelItem, container: MenuContainerController, view: MenuItemView);
+    constructor(model: MenuModelItem<CTX>, container: MenuContainerController<CTX>, view: MenuItemView);
     private _prepareModel;
     getView(): MenuItemView | undefined;
     isCurrentItem(): boolean;
@@ -959,19 +956,59 @@ declare class MenuItemController {
      * @memberof MenuItemController
      */
     fireMouseStay(): false | undefined;
-    getModel(): MenuModelItem;
-    getContainer(): MenuContainerController;
+    getModel(): MenuModelItem<CTX>;
+    getContainer(): MenuContainerController<CTX>;
     dispose(destroy?: boolean): void;
 }
+/**
+ * each user event interacts with menu items through this wrapper.
+ * this event object is passed as a first argument to each event handler.
+ */
+declare class MenuUserEventObject<CTX> implements MenuUserEventObjectModel {
+    ctx: CTX;
+    srcContext: CTX;
+    target: MenuContainerUI<CTX> | MenuItemUI<CTX>;
+    readonly type: MenuItemUserEventNames;
+    readonly index?: number;
+    readonly id?: string;
+    readonly name?: string;
+    readonly radioIndex?: number;
+    readonly checked?: boolean;
+    value?: any;
+    cancelGlobal: boolean;
+    constructor(type: MenuItemUserEventNames, ctrl: MenuContainerController<CTX> | MenuItemController<CTX>);
+    dispose(): void;
+}
+declare abstract class _MenuUI<T> {
+    protected _ctrl: T;
+    constructor(ctrl: T);
+    dispose(): void;
+}
+declare class MenuContainerUI<CTX> extends _MenuUI<MenuContainerController<CTX>> {
+    constructor(ctrl: MenuContainerController<CTX>);
+    loadSkin(css: string, root?: boolean): void;
+    /**
+     * create stand alone popup dialog
+     */
+    popup(args: any, marginX?: number, marginY?: number): any;
+}
+declare class MenuItemUI<CTX> extends _MenuUI<MenuItemController<CTX>> {
+    constructor(ctrl: MenuItemController<CTX>);
+    getContainer(): MenuContainerUI<CTX>;
+    setLabel(text: string, asHtml?: boolean): void;
+    getLabel(): string | void;
+    setIcon(icon: IconSettingType): void;
+    remove(): void;
+}
 
-interface HTAContextMenuArguments extends Omit<MenuItemSubmenuParameter, 'type' | 'label'> {
+interface HTAContextMenuArguments<CTX> extends Omit<MenuItemSubmenuParameter<CTX>, 'type' | 'label'> {
     type?: 'submenu' | 'popup';
     onunload?: (...args: any) => any;
 }
-declare class HTAContextMenu extends MenuRootController {
-    constructor(param: HTAContextMenuArguments);
+declare class HTAContextMenu<CTX> extends MenuRootController<CTX> {
+    constructor(param: HTAContextMenuArguments<CTX>);
     getVersion(): string;
     showVersion(): void;
 }
 
-export { HTAContextMenu as default };
+export { HTAContextMenu, HTAContextMenuArguments, MenuItemsCreateParameter };

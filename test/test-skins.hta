@@ -130,7 +130,7 @@ var menu = new HTAContextMenu({
         global: true,
         name: 'skinradio',
         labels: ['default', 'classic', 'xp', 'win7'],
-        onchange: function(ev) {
+        onchange: function(ctx, ev) {
           setSkinAndSounds(ev.value);
         }
       }]

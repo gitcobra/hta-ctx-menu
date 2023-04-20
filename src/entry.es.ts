@@ -11,7 +11,7 @@ DEV: {
   Ver.tag = 'dev';
 }
 
-export default class HTAContextMenu<CTX> extends MenuRootController<CTX> {
+class HTAContextMenu<CTX> extends MenuRootController<CTX> {
   constructor(param: HTAContextMenuArguments<CTX>) {
     super(param as MenuItemSubmenuParameter<CTX>);
   }
@@ -22,3 +22,9 @@ export default class HTAContextMenu<CTX> extends MenuRootController<CTX> {
     alert(`HTAContextMenu v` + this.getVersion());
   }
 }
+
+// constructor
+export { HTAContextMenu };
+// types
+export { HTAContextMenuArguments };
+export { MenuItemsCreateParameter } from "./menumodel"

@@ -14,7 +14,7 @@ await writeFile( path, JSON.stringify(Ver, null, '  ') );
 path = new URL('../package.json', import.meta.url).pathname.substring(1);
 txt = await readFile(path);
 const Package = JSON.parse(txt);
-Package.version = `${Ver.major}.${Ver.minor}.${String(Ver.build).padStart(3, '0')}${Ver.tag}`;
+Package.version = `${Ver.major}.${Ver.minor}.${Ver.build}${Ver.tag}`;
 await writeFile( path, JSON.stringify(Package, null, '  ') );
 
 //console.log(Ver);

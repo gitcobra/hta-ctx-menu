@@ -1,10 +1,11 @@
 {
   "name": "hta-ctx-menu",
-  "version": "0.0.013",
+  "version": "0.0.15",
   "type": "module",
   "description": "create real context menus for HTA (HTML Application)",
-  "main": "./release/hta-ctx-menu.js",
-  "types": "./release/hta-ctx-menu.d.ts",
+  "main": "./release/hta-ctx-menu.esm.js",
+  "browser": "./release/hta-ctx-menu.esm.js",
+  "types": "./release/hta-ctx-menu.esm.d.ts",
   "files": [
     "release/**/*.js",
     "release/**/*.d.ts"

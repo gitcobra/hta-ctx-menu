@@ -1,8 +1,10 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.HTAContextMenu = factory());
-})(this, (function () { 'use strict';
+/*
+  title: hta-ctx-menu
+  version: 0.0.15
+  github: https://github.com/gitcobra/hta-ctx-menu
+*/
+var HTAContextMenu = (function () {
+    'use strict';
 
     var extendStatics = function(d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -484,11 +486,8 @@
         }
         /**
          * fire user events such as onclick, onchange, etc
-         * @param {MenuItemUserEventNames} handler
-         * @param {...any[]} args
-         * @memberof MenuNormal
          */
-        MenuNormal.prototype.fireUserEvent = function (handler, eventObj) {
+        MenuNormal.prototype.fireUserEvent = function (handler, ctx, eventObj) {
             var _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
             if (this._unlistening)
                 return;
@@ -496,39 +495,39 @@
             try {
                 switch (handler) {
                     case 'activate':
-                        (_c = this.onactivate) === null || _c === void 0 ? void 0 : _c.call(this, eventObj);
+                        (_c = this.onactivate) === null || _c === void 0 ? void 0 : _c.call(this, eventObj, ctx);
                         break;
                     case 'click':
-                        (_d = this.onclick) === null || _d === void 0 ? void 0 : _d.call(this, eventObj);
+                        (_d = this.onclick) === null || _d === void 0 ? void 0 : _d.call(this, eventObj, ctx);
                         break;
                     case 'dblclick':
-                        (_e = this.ondblclick) === null || _e === void 0 ? void 0 : _e.call(this, eventObj);
+                        (_e = this.ondblclick) === null || _e === void 0 ? void 0 : _e.call(this, eventObj, ctx);
                         break;
                     case 'change': {
                         if (this.isCheckable()) {
                             if (this.getType() === 'radio') {
                                 // indivisual onchange
-                                (_f = this.onchange) === null || _f === void 0 ? void 0 : _f.call(this, eventObj);
+                                (_f = this.onchange) === null || _f === void 0 ? void 0 : _f.call(this, eventObj, ctx);
                             }
                             else
-                                (_g = this.onchange) === null || _g === void 0 ? void 0 : _g.call(this, eventObj);
+                                (_g = this.onchange) === null || _g === void 0 ? void 0 : _g.call(this, eventObj, ctx);
                         }
                         break;
                     }
                     case 'highlight':
-                        (_h = this.onhighlight) === null || _h === void 0 ? void 0 : _h.call(this, eventObj);
+                        (_h = this.onhighlight) === null || _h === void 0 ? void 0 : _h.call(this, eventObj, ctx);
                         break;
                     case 'beforeload':
                         if (this.isSubmenu())
-                            (_j = this.onbeforeload) === null || _j === void 0 ? void 0 : _j.call(this, eventObj);
+                            (_j = this.onbeforeload) === null || _j === void 0 ? void 0 : _j.call(this, eventObj, ctx);
                         break;
                     case 'load':
                         if (this.isSubmenu())
-                            (_k = this.onload) === null || _k === void 0 ? void 0 : _k.call(this, eventObj);
+                            (_k = this.onload) === null || _k === void 0 ? void 0 : _k.call(this, eventObj, ctx);
                         break;
                     case 'unload':
                         if (this.isSubmenu())
-                            (_l = this.onunload) === null || _l === void 0 ? void 0 : _l.call(this, eventObj);
+                            (_l = this.onunload) === null || _l === void 0 ? void 0 : _l.call(this, eventObj, ctx);
                         break;
                     default:
                         notFired = true;
@@ -544,7 +543,7 @@
             if (eventObj.cancelGlobal !== true && !this._ignoreGlobalEvents) {
                 if (this.isNormal()) {
                     try {
-                        (_p = (_o = this._parent) === null || _o === void 0 ? void 0 : _o.getGlobalEvent(handler)) === null || _p === void 0 ? void 0 : _p(eventObj);
+                        (_p = (_o = this._parent) === null || _o === void 0 ? void 0 : _o.getGlobalEvent(handler)) === null || _p === void 0 ? void 0 : _p(eventObj, ctx);
                     }
                     catch (e) {
                         if (!this._ignoreErrors)
@@ -867,7 +866,7 @@
             var _c;
             var resultParameter;
             try {
-                var demanded = this.ondemand.call(this._parent, eventObj) || [];
+                var demanded = this.ondemand.call(this._parent, eventObj, eventObj.ctx) || [];
                 if (demanded && typeof (demanded) !== 'object')
                     throw new Error('ondemand callback must returns an object type MenuItemsCreateParameter');
                 if (demanded instanceof Array)
@@ -1342,19 +1341,19 @@
             this._globalEvents = null;
         };
         // system user events
-        MenuSubmenu.prototype.fireUserEvent = function (handler, eventObj) {
+        MenuSubmenu.prototype.fireUserEvent = function (handler, ctx, eventObj) {
             var _c, _d;
             if (handler !== '_rootclose' && handler !== '_viewready')
-                return _super.prototype.fireUserEvent.call(this, handler, eventObj);
+                return _super.prototype.fireUserEvent.call(this, handler, ctx, eventObj);
             if (!this.isRoot()) {
                 return;
             }
             switch (handler) {
                 case '_rootclose':
-                    (_c = this._onrootclose) === null || _c === void 0 ? void 0 : _c.call(this, eventObj);
+                    (_c = this._onrootclose) === null || _c === void 0 ? void 0 : _c.call(this, eventObj, ctx);
                     break;
                 case '_viewready':
-                    (_d = this._onviewready) === null || _d === void 0 ? void 0 : _d.call(this, eventObj);
+                    (_d = this._onviewready) === null || _d === void 0 ? void 0 : _d.call(this, eventObj, ctx);
                     break;
             }
         };
@@ -2246,7 +2245,7 @@
      */
     var MenuDialogView = /** @class */ (function (_super) {
         __extends(MenuDialogView, _super);
-        function MenuDialogView(itemNumber, parent, customClass) {
+        function MenuDialogView(itemNumber, parent, customClass, specifiedParentWindow) {
             var _this = _super.call(this) || this;
             _this._transTargetsForContainer = {};
             _this._transTargetsForItems = {};
@@ -2268,7 +2267,7 @@
             _this._waitingAfterLoad = false;
             _this._layer = parent ? parent._layer + 1 : 0;
             _this._vmenutable = new VirtualDOMNode('table', { id: 'menu-table', border: 0, cellSpacing: 0, cellPadding: 0 }, '#menu-table');
-            _this._win = _this._initializeDialog(itemNumber, parent === null || parent === void 0 ? void 0 : parent.win(), customClass);
+            _this._win = _this._initializeDialog(itemNumber, specifiedParentWindow || (parent === null || parent === void 0 ? void 0 : parent.win()), customClass);
             _this._doc = _this._win.document;
             _this.setDocumentClass('topmost');
             _this._evaWin = new EventAttacher(_this._win);
@@ -3072,9 +3071,9 @@
         /**
          * create controller and view
          */
-        MenuRootController.prototype.open = function (x, y, ctx) {
+        MenuRootController.prototype.open = function (x, y, ctx, parentWindow) {
             this.close();
-            var ctrl = new MenuContainerController(this, ctx, { base: 'screen', marginX: x, marginY: y });
+            var ctrl = new MenuContainerController(this, ctx, { base: 'screen', marginX: x, marginY: y }, parentWindow);
             if (ctrl === null || ctrl === void 0 ? void 0 : ctrl.getView()) {
                 this._ctrl = ctrl;
                 this._readyToUse = true;
@@ -3247,7 +3246,7 @@
          * @param {(any | MenuItemController)} [ctx] - it is MenuItemController if it is created by parent MenuItemController, otherwise it is a root context.
          * @memberof MenuContainerController
          */
-        function MenuContainerController(param, ctx, pos) {
+        function MenuContainerController(param, ctx, pos, rootWindow) {
             var _a;
             this._view = null;
             this._items = [];
@@ -3287,15 +3286,15 @@
             pos = this._model.isPopup() && this._model.getPosObject() || pos || {};
             // only root menu observes window.document's events
             if (!this._parent) {
-                this._evaBaseDoc = new EventAttacher(document, undefined, IE_Version.MSIE === 11); // use addEvenetListener if HTA is running on IE11 mode
+                this._evaBaseDoc = new EventAttacher((rootWindow === null || rootWindow === void 0 ? void 0 : rootWindow.document) || document, undefined, IE_Version.MSIE === 11); // use addEvenetListener if HTA is running on IE11 mode
             }
             this._modelEventMananger = new MenuModelEventManager(this._model);
-            this._model.fireUserEvent('beforeload', new MenuUserEventObject('beforeload', this));
+            this._model.fireUserEvent('beforeload', ctx, new MenuUserEventObject('beforeload', this));
             // do not to catch window initializing error when dev mode
             // catch an error during initializing the view window when in production mode
             try {
-                this._createView(pos);
-                this._model.fireUserEvent('load', new MenuUserEventObject('load', this));
+                this._createView(pos, rootWindow);
+                this._model.fireUserEvent('load', ctx, new MenuUserEventObject('load', this));
             }
             catch (e) {
                 this._parentItem = null;
@@ -3307,7 +3306,7 @@
                 this._view = null;
             }
         }
-        MenuContainerController.prototype._createView = function (pos) {
+        MenuContainerController.prototype._createView = function (pos, rootWindow) {
             var _a;
             this._currentItem = null;
             // opening dialog without delay causes problems occasionally on IE6 or lower (duplicating dialogs)
@@ -3324,7 +3323,7 @@
             }
             // get new view
             try {
-                this._view = new MenuDialogView((this._parentItem && this._parentItem.getModel().getIndex() + 1 || 0), (_a = this._parent) === null || _a === void 0 ? void 0 : _a.getView(), this._model.getCustomDialogClass());
+                this._view = new MenuDialogView((this._parentItem && this._parentItem.getModel().getIndex() + 1 || 0), (_a = this._parent) === null || _a === void 0 ? void 0 : _a.getView(), this._model.getCustomDialogClass(), rootWindow);
                 this._setViewDOMEvents(this._view);
             }
             catch (e) {
@@ -3727,8 +3726,8 @@
             }
             // create child instance
             this.getRootController().setLocked(true);
-            var child = new MenuContainerController(item, null, { base: 'item', posX: 'right-out', marginLeft: marginLeft, marginRight: marginRight });
-            if (child instanceof MenuContainerController) {
+            var child = new MenuContainerController(item, this._ctx, { base: 'item', posX: 'right-out', marginLeft: marginLeft, marginRight: marginRight });
+            if (child instanceof (MenuContainerController)) {
                 this._child = child;
                 this.getRootController().setLastChild(child);
                 var cpos = child.getViewPosition();
@@ -3978,7 +3977,7 @@
                     //item.getView()?.deleteViewFlag('activate');
                     (_d = item.getView()) === null || _d === void 0 ? void 0 : _d.setViewFlag('highlight', true);
                     (_e = this._view) === null || _e === void 0 ? void 0 : _e.setBodyViewFlagByItem('highlight', true, ((_f = item.getView()) === null || _f === void 0 ? void 0 : _f.getItemNumber()) || 0, model.getCustomClassNames());
-                    model.fireUserEvent('highlight', new MenuUserEventObject('highlight', this));
+                    model.fireUserEvent('highlight', this.getContext(), new MenuUserEventObject('highlight', this));
                 }
                 this._hookToCloseCurrentChild(item);
             }
@@ -4161,14 +4160,14 @@
             }
             catch (e) {
             }
-            this._model.fireUserEvent('unload', new MenuUserEventObject('unload', this));
+            this._model.fireUserEvent('unload', this.getContext(), new MenuUserEventObject('unload', this));
             if (this._parent) {
                 if (!this._parent.isDisposed()) {
                     this._parent.setTopMost();
                 }
             }
             else {
-                this._model.fireUserEvent('_rootclose', new MenuUserEventObject('_rootclose', this));
+                this._model.fireUserEvent('_rootclose', this.getContext(), new MenuUserEventObject('_rootclose', this));
             }
             if (this._model.isPopup()) {
                 this.getRootController().enableOnlyLastChild(false);
@@ -4344,11 +4343,11 @@
             if (type === 'radio' && model.isRadio() || type === 'checkbox' && model.isCheckbox()) {
                 if (model.setChecked()) {
                     var changeEvObj_1 = new MenuUserEventObject('change', this);
-                    queue.next(function () { return model.fireUserEvent('change', changeEvObj_1); });
+                    queue.next(function () { return model.fireUserEvent('change', _this_1.getContainer().getContext(), changeEvObj_1); });
                 }
             }
             // execute onclick or ondblclick
-            model.fireUserEvent(clicktype, clickEvObj);
+            model.fireUserEvent(clicktype, this.getContainer().getContext(), clickEvObj);
             var flashing = false;
             if (!model.isSubmenu()) {
                 // flash
@@ -4374,7 +4373,7 @@
                         }
                         catch (e) {
                         }
-                        queue.next(function () { return model.fireUserEvent('close', closeEvObj); });
+                        queue.next(function () { return model.fireUserEvent('close', _this_1.getContainer().getContext(), closeEvObj); });
                     });
                 }
             }
@@ -4386,7 +4385,7 @@
                     return;
                 }
                 // fire acitvate event
-                model.fireUserEvent('activate', activateEvObj);
+                model.fireUserEvent('activate', _this_1.getContainer().getContext(), activateEvObj);
                 root.setLocked(false);
                 root = null;
             });
@@ -4464,6 +4463,7 @@
             var model = ctrl.getModel();
             if (ctrl instanceof MenuItemController) {
                 this.ctx = ctrl.getContainer().getContext();
+                this.srcContext = this.ctx;
                 this.target = new MenuItemUI(ctrl);
                 this.id = model.getId();
                 this.index = model.getIndex();
@@ -4476,6 +4476,7 @@
             }
             else {
                 this.ctx = ctrl.getContext();
+                this.srcContext = this.ctx;
                 this.target = new MenuContainerUI(ctrl);
             }
         }
@@ -4483,6 +4484,7 @@
             if (!this.target)
                 return; // disposed already
             this.ctx = null;
+            this.srcContext = null;
             this.target.dispose();
             this.target = null;
             this.value = null;
@@ -4547,7 +4549,7 @@
         return MenuItemUI;
     }(_MenuUI));
 
-    var major=0;var minor=0;var build=12;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
+    var major=0;var minor=0;var build=15;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
 
     var HTAContextMenu = /** @class */ (function (_super) {
         __extends(HTAContextMenu, _super);
@@ -4565,4 +4567,4 @@
 
     return HTAContextMenu;
 
-}));
+})();

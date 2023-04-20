@@ -1,4 +1,4 @@
-import HTAContextMenu from "../dist/hta-ctx-menu";
+import {HTAContextMenu} from "../";
 
 const CheckRecord = { checked: false };
 const menu = new HTAContextMenu<HTMLElement>({

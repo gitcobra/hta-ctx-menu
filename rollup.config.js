@@ -22,27 +22,35 @@ const DEV = !!process.env.ROLLUP_WATCH;
 const BUILD_DEV = !!process.env.NODE_BUILD_DEV;
 const RELEASE = !!process.env.NODE_BUILD_RELEASE;
 
-// global name for the constructor
-const GLOBAL_NAME = 'HTAContextMenu';
 // bundle file namey
 const bundleName = `hta-ctx-menu`;
 // destination
 const dist = `${RELEASE ? 'release' : 'dist'}${BUILD_DEV ? '/dev' : ''}`;
+// entry file
+//const entryFilePath = `./src/entry.ts`;
+//const entryDtsPath = `./${dist}/dts/src/entry.d.ts`;
+// output formats
+const formats = ['iife', 'es'];
+// global name for the constructor
+const GLOBAL_NAME = 'HTAContextMenu';
 
+
+
+
+// sites
+const GITHUB_URL = `https://github.com/gitcobra/${bundleName}`;
 // banner
 let BANNER_TXT = '';
 if( !DEV ) {
   const Ver = JSON.parse(fs.readFileSync('./res/version.json'));
-  const VERSION_TXT = `${Ver.major}.${Ver.minor}.${String(Ver.build).padStart(3, '0')}${Ver.tag}`;
+  const VERSION_TXT = `${Ver.major}.${Ver.minor}.${String(Ver.build)}${Ver.tag}`;
 
   BANNER_TXT = `/*
-  title: hta-ctx-menu
+  title: ${bundleName}
   version: ${VERSION_TXT}
-  github: https://github.com/gitcobra/hta-ctx-menu
+  github: ${GITHUB_URL}
 */`;
 }
-
-
 
 const CommonPlugins = [
   json({compact: true}),
@@ -59,7 +67,6 @@ const CommonPlugins = [
     },
   }),
   
-  // HACK: 
   // unfortunately rollup-plugin-json uses Object.freeze (that doesn't work on HTA of course).
   // so it replaces "Object.freeze({...})" with "Object({...})".
   replace({
@@ -68,13 +75,22 @@ const CommonPlugins = [
   }),
 ];
 
-const BuildConfig = [
-  {
-    input: ["src/entry.ts"],
+
+const BuildConfig = [];
+formats.forEach(format => {
+  const formatFileName = format === 'es' ? 'esm' : format;
+  const baseFileName = `${dist}/${bundleName}${format !== 'iife' ? '.' + formatFileName : ''}`;
+
+  // entry file
+  const entryFilePath = `./src/entry.${format}.ts`;
+  const entryDtsPath = `./${dist}/dts/src/entry.${format}.d.ts`;
+
+  BuildConfig.push({
+    input: [entryFilePath],
 
     output: {
-      format: "umd",
-      file: `${dist}/${bundleName}.js`,
+      format: format,
+      file: `${baseFileName}.js`,
       name: GLOBAL_NAME,
       sourcemap: false,
       esModule: false,
@@ -83,19 +99,16 @@ const BuildConfig = [
 
     plugins: [
       ...!DEV ? [del({
-        targets: [`${dist}/*.js`, `${dist}/*.ts`, `${dist}/dts`],
+        targets: [`${baseFileName}.*`, `${dist}/dts`],
         hook: 'buildStart',
         verbose: true
       }),] : [],
 
-      ...CommonPlugins,
-
       typescript({
-        // FIXME: actually the test folder is not required here but when a single source folder is specified, a compile error occurs for some reason
         //"exclude": ["./test/*.ts"],
         "compilerOptions": {
           "declaration": true,
-          "outDir": "tmp",
+          //"outDir": "tmp",
           "declarationDir": "dts",
           
           "noUnusedParameters": false,
@@ -103,6 +116,7 @@ const BuildConfig = [
         },
       }),
 
+      ...CommonPlugins,
 
       // remove DEV blocks
       ...!(DEV || BUILD_DEV) ? [
@@ -115,15 +129,13 @@ const BuildConfig = [
     ],
     onwarn: suppress_warnings,
     //watch: {clearScreen: false},
-  },
-  
+  }, {
   // bundle d.ts files
-  {
     input: [
-      `${dist}/dts/src/entry.d.ts`
+      entryDtsPath
     ],
     output: [
-      { file: `${dist}/${bundleName}.d.ts` },
+      { file: `${dist}/${bundleName}${format !== 'iife' ? '.' + formatFileName : ''}.d.ts` },
     ],
 
     plugins: [
@@ -135,8 +147,8 @@ const BuildConfig = [
       })] : [],
     ]
     //watch: {clearScreen: false},
-  }
-];
+  });
+});
 
 
 // for test folder's ts files. they are output to the same folder.

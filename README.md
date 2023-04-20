@@ -1,4 +1,4 @@
-# HTAContextMenu
+# hta-ctx-menu
 Create "real" customizable context menus in *HTML Application* (**HTA**) for Windows OS.
 
 Unlike the ordinary webpage-based context menus, this can be displayed **outside** of the document's window.
@@ -6,7 +6,7 @@ Unlike the ordinary webpage-based context menus, this can be displayed **outside
 ![test](./docs/img/top.png)
 
 ## Mechanism
-* HTAContextMenu uses `showModelessDialog` to create a menu, so the base object is not a `HTMLElement` but a `window`, which is not bound to the parent's `document.body`.
+* hta-ctx-menu uses `showModelessDialog` to create a menu, so the base object is not a `HTMLElement` but a `window`, which is not bound to the parent's `document.body`.
 * The menus consist only of basic HTML/CSS+JavaScript, not using any kind of external components such as `ActiveXObject`, `<Object>`, `<Applet>` etc.
 
 
@@ -31,18 +31,18 @@ Save [`hta-ctx-menu.js`](./release/hta-ctx-menu.js?raw=true) to your local disk 
 <script src="hta-ctx-menu.js"></script>
 ```
 
-### or install it with npm
+### npm
 ```
 npm install hta-ctx-menu
 ```
 #### import:
 ```
-import HTAContextMenu from "hta-ctx-menu";
+import { HTAContextMenu } from "hta-ctx-menu";
 ```
 
 #### Using Typescript:
 ```
-please refer to this repository...
+please refer to the ./test folder in this repository
 ```
 
 
