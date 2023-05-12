@@ -1001,14 +1001,19 @@ declare class MenuItemUI<CTX> extends _MenuUI<MenuItemController<CTX>> {
     remove(): void;
 }
 
-interface HTAContextMenuArguments<CTX> extends Omit<MenuItemSubmenuParameter<CTX>, 'type' | 'label'> {
+interface HtaContextMenuArguments<CTX> extends Omit<MenuItemSubmenuParameter<CTX>, 'type' | 'label'> {
     type?: 'submenu' | 'popup';
     onunload?: (...args: any) => any;
 }
-declare class HTAContextMenu<CTX> extends MenuRootController<CTX> {
-    constructor(param: HTAContextMenuArguments<CTX>);
+declare class HtaContextMenu<CTX> extends MenuRootController<CTX> {
+    Types: {
+        MenuParameter: HtaContextMenuArguments<CTX>;
+        MenuItemParameter: MenuItemsCreateParameter<CTX>;
+        OndemandResult: MenuItemsCreateParameter<CTX> | MenuItemsCreateParameter<CTX>[] | null | undefined;
+    };
+    constructor(param: HtaContextMenuArguments<CTX>);
     getVersion(): string;
     showVersion(): void;
 }
 
-export { HTAContextMenu as default };
+export { HtaContextMenu as default };

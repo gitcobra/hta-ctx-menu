@@ -61,6 +61,10 @@ class MenuRootController<CTX> extends _RootController<CTX> {
   //private _locked: number = 0; // locked stack number
   protected _readyToUse = false;
   protected _isUpdatingView = false;
+  protected _openedPos = {
+    x: 0,
+    y: 0,
+  };
 
   constructor(param: MenuItemSubmenuParameter<CTX>/*, inheritAttr?: MenuSubmenu*/) {
     super();
@@ -80,8 +84,12 @@ class MenuRootController<CTX> extends _RootController<CTX> {
    */
   open(x:number, y:number, ctx:CTX, parentWindow?: Window) {
     console.log('MenuRootController#open', 'yellow');
+    if( this._locked )
+      return;
     this.close();
     
+    this._openedPos.x = x;
+    this._openedPos.y = y;
     const ctrl = new MenuContainerController<CTX>(this, ctx, {base:'screen', marginX:x, marginY:y}, parentWindow);
     if( ctrl?.getView() ) {
       this._ctrl = ctrl;
@@ -100,8 +108,8 @@ class MenuRootController<CTX> extends _RootController<CTX> {
     return this._isUpdatingView;
   }
 
-  getPosition(): {x:number, y:number, width:number, height:number} {
-    return {} as any;
+  getLastPosition(): {x:number, y:number} {
+    return { ...this._openedPos };
   }
   getRectangleOfWholeMenus(): ClientRect {
     let ctrl = this._ctrl;
@@ -149,6 +157,9 @@ class MenuRootController<CTX> extends _RootController<CTX> {
   }
   clearGlobalEvents() {
     this._model.clearGlobalEvents();
+  }
+  focus() {
+    this._ctrl?.getView()?.focus();
   }
 
   /*
@@ -757,6 +768,10 @@ class MenuContainerController<CTX> {
   }
   getViewPosition(): ViewPosition | null {
     return this._viewPosition;
+  }
+  getDialogPosition(): ClientRect | null {
+    const pos = this._view?.getDialogPosition();
+    return pos ? {...pos} : null;
   }
   getModel() {
     return this._model;
@@ -1651,8 +1666,10 @@ class MenuItemController<CTX> {
       case 'submenu':
         //this._container.openSubmenu(this);
         if( this._container?.isAvailable() ) {
-          if( !this._container.isCurrentOpenedChildSubmenuItem(this) || !this._view?.getViewFlag('activate') )
-            this.activate();
+          if( !this._container.isCurrentOpenedChildSubmenuItem(this) || !this._view?.getViewFlag('activate') ) {
+            // disable opening submenu by mouse-staying at this time because of the problem that it opens parentless child
+            //this.activate();
+          }
         }
         else
           return false;
@@ -1730,7 +1747,10 @@ class MenuUserEventObject<CTX> implements MenuUserEventObjectModel {
   readonly id?: string;
   readonly name?: string;
   readonly radioIndex?: number;
+  readonly selectedIndex?: number;
   readonly checked?: boolean;
+  readonly rootX: number;
+  readonly rootY: number;
   value?: any;
   cancelGlobal: boolean = false;
 
@@ -1738,6 +1758,7 @@ class MenuUserEventObject<CTX> implements MenuUserEventObjectModel {
     this.type = type;
     
     const model = ctrl.getModel();
+    let container: MenuContainerController<CTX>;
     if( ctrl instanceof MenuItemController ) {
       this.ctx = ctrl.getContainer().getContext();
       this.srcContext = this.ctx;
@@ -1749,14 +1770,22 @@ class MenuUserEventObject<CTX> implements MenuUserEventObjectModel {
         this.value = model.getValue();
         this.name = model.getName() || undefined;
         this.radioIndex = model.isRadio() ? model.getRadioIndex() : undefined;
+        this.selectedIndex = this.radioIndex;
         this.checked = model.isChecked();
       }
+      container = ctrl.getContainer();
     }
     else {
       this.ctx = ctrl.getContext();
       this.srcContext = this.ctx;
       this.target = new MenuContainerUI(ctrl);
+      
+      container = ctrl;
     }
+    
+    const pos = container.getRootController().getLastPosition();
+    this.rootX = pos.x;
+    this.rootY = pos.y;
   }
 
   dispose() {

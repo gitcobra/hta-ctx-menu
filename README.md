@@ -37,7 +37,7 @@ npm install hta-ctx-menu
 ```
 #### import:
 ```
-import { HTAContextMenu } from "hta-ctx-menu";
+import { HtaContextMenu } from "hta-ctx-menu";
 ```
 
 #### Using Typescript:

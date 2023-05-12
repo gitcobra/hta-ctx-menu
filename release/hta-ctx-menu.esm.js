@@ -1,6 +1,6 @@
 /*
   title: hta-ctx-menu
-  version: 0.0.15
+  version: 0.0.20
   github: https://github.com/gitcobra/hta-ctx-menu
 */
 var extendStatics = function(d, b) {
@@ -4546,20 +4546,29 @@ var MenuItemUI = /** @class */ (function (_super) {
     return MenuItemUI;
 }(_MenuUI));
 
-var major=0;var minor=0;var build=15;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
+var major=0;var minor=0;var build=20;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
 
-var HTAContextMenu = /** @class */ (function (_super) {
-    __extends(HTAContextMenu, _super);
-    function HTAContextMenu(param) {
-        return _super.call(this, param) || this;
+var HtaContextMenu = /** @class */ (function (_super) {
+    __extends(HtaContextMenu, _super);
+    function HtaContextMenu(param) {
+        var _this = _super.call(this, param) || this;
+        _this.Types = {};
+        return _this;
     }
-    HTAContextMenu.prototype.getVersion = function () {
+    HtaContextMenu.prototype.getVersion = function () {
         return "".concat(Ver.major, ".").concat(Ver.minor, ".").concat(Ver.build).concat(Ver.tag);
     };
-    HTAContextMenu.prototype.showVersion = function () {
+    HtaContextMenu.prototype.showVersion = function () {
         alert("HTAContextMenu v" + this.getVersion());
     };
-    return HTAContextMenu;
+    return HtaContextMenu;
 }(MenuRootController));
+// constructor
+//export default HtaContextMenu;
+/*
+// types
+export { HtaContextMenuArguments };
+export { MenuItemsCreateParameter } from "./menumodel"
+*/
 
-export { HTAContextMenu };
+export { HtaContextMenu as default };

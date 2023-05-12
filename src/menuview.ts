@@ -643,6 +643,9 @@ class MenuDialogView extends _ViewBase<MenuDialogView> {
   getLayer() {
     return this._layer;
   }
+  focus() {
+    VNodeUpdater.callback(() => this._win.focus());
+  }
   
   setDocumentClass(cstring: string, flag = true, immediate = false) {
     flag? this._vdoc.addClass(cstring) : this._vdoc.removeClass(cstring);
@@ -1129,9 +1132,9 @@ class MenuItemView extends _ViewBase<MenuItemView> {
       const size = icon.fontSize && (typeof icon.fontSize === 'number' ? icon.fontSize + 'px' : String(icon.fontSize));
       velement.html(text);
       velement.setStyle(`${family ? `font-family:${family};` : ''}`);
-      velement.addStyle(`${size ? `font-size:${size};` : ''}`);
+      velement.addStyle(`${size ? `font-size:${size};` : 'font-size:130%;'}`);
       velement.addStyle(`visibility:${icon.blank ? 'hidden' : 'visible'}`);
-      //console.log(family+":"+size+":"+icon.blank, "lime");
+      console.log(family+":"+size+":"+icon.blank, "cyan");
     }
   }
 

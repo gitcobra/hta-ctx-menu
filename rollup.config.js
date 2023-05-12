@@ -27,12 +27,12 @@ const bundleName = `hta-ctx-menu`;
 // destination
 const dist = `${RELEASE ? 'release' : 'dist'}${BUILD_DEV ? '/dev' : ''}`;
 // entry file
-//const entryFilePath = `./src/entry.ts`;
-//const entryDtsPath = `./${dist}/dts/src/entry.d.ts`;
+const entryFilePath = `./src/entry.ts`;
+const entryDtsPath = `./${dist}/dts/src/entry.d.ts`;
 // output formats
 const formats = ['iife', 'es'];
 // global name for the constructor
-const GLOBAL_NAME = 'HTAContextMenu';
+const GLOBAL_NAME = 'HtaContextMenu';
 
 
 
@@ -81,16 +81,13 @@ formats.forEach(format => {
   const formatFileName = format === 'es' ? 'esm' : format;
   const baseFileName = `${dist}/${bundleName}${format !== 'iife' ? '.' + formatFileName : ''}`;
 
-  // entry file
-  const entryFilePath = `./src/entry.${format}.ts`;
-  const entryDtsPath = `./${dist}/dts/src/entry.${format}.d.ts`;
-
   BuildConfig.push({
     input: [entryFilePath],
 
     output: {
       format: format,
       file: `${baseFileName}.js`,
+      //...format === 'iife' ? {name: GLOBAL_NAME} : {},
       name: GLOBAL_NAME,
       sourcemap: false,
       esModule: false,
@@ -153,8 +150,10 @@ formats.forEach(format => {
 
 // for test folder's ts files. they are output to the same folder.
 if( DEV ) {
-  const externalId = new URL('./dist/hta-ctx-menu', import.meta.url).pathname.substring(1).replace(/\//g, '\\');
   const TEST_SRC = './test/';
+  const externalPackagePath = `../dist/${bundleName}.esm`;
+  const externalPackageAbsolutePath = new URL(TEST_SRC + externalPackagePath, import.meta.url).pathname.substring(1).replace(/\//g, '\\');
+  
   // create output settings for each file in the test folder
   fs.readdirSync(TEST_SRC).forEach(async (file) => {
     if( !fs.statSync(TEST_SRC + file).isFile() || !/\.ts$/i.test(file) )
@@ -162,13 +161,13 @@ if( DEV ) {
     
     BuildConfig.push({
       input: [TEST_SRC + file],
-      external: ['../dist/hta-ctx-menu'],
+      external: [externalPackagePath],
       output: {
         format: "iife",
         dir: './test',
         sourcemap: false,
         globals: {
-          [externalId]: "HTAContextMenu",
+          [externalPackageAbsolutePath]: GLOBAL_NAME,
         },
       },
 
@@ -180,7 +179,6 @@ if( DEV ) {
             "noUnusedLocals": false,
           }
         }),
-        ...CommonPlugins,
       ],
       
       onwarn: suppress_warnings,
@@ -188,6 +186,7 @@ if( DEV ) {
     });
   });
 }
+
 
 export default BuildConfig;
 

@@ -1,7 +1,9 @@
-import {HTAContextMenu} from "../";
+import HtaContextMenu from "../dist/hta-ctx-menu.esm";
+
 
 const CheckRecord = { checked: false };
-const menu = new HTAContextMenu<HTMLElement>({
+
+const menu = new HtaContextMenu<HTMLElement>({
   skin: 'classic',
   //autoClose: false,
   //fontSize: 20,
@@ -117,9 +119,33 @@ const menu = new HTAContextMenu<HTMLElement>({
         Checkbox.onclick(ev.checked);
       },
       record: CheckRecord,
+    },
+    {
+      type: 'demand',
+      ondemand() {
+        return [
+          {
+            type: 'submenu',
+            label: 'damandable radio',
+            items: [
+              {
+                type: 'radios',
+                global: true,
+                name: 'demandableradio',
+                labels: [
+                  {label: 'A', id:'A1'},
+                  {label: 'B', id:'B1'},
+                  {label: 'C', id:'C1'},
+                ]
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 });
+
 
 document.oncontextmenu = () => {
   menu.open(event.screenX, event.screenY, event.srcElement as HTMLElement);
