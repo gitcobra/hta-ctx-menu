@@ -1,6 +1,6 @@
 {
   "name": "hta-ctx-menu",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "type": "module",
   "description": "create real context menus for HTA (HTML Application)",
   "main": "./release/hta-ctx-menu.esm.js",
@@ -10,10 +10,6 @@
     "release/**/*.js",
     "release/**/*.d.ts"
   ],
-  "exports": {
-    ".": "./release/hta-ctx-menu.js",
-    "./dev": "./release/dev/hta-ctx-menu.js"
-  },
   "scripts": {
     "dev": "rollup -c --watch",
     "release": "SET NODE_BUILD_RELEASE=true && npm run ver-update && npm run build-res && npm run build",

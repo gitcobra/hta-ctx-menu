@@ -1,6 +1,6 @@
 /*
   title: hta-ctx-menu
-  version: 0.0.23
+  version: 0.0.24
   github: https://github.com/gitcobra/hta-ctx-menu
 */
 var HtaContextMenu = (function () {
@@ -4636,7 +4636,7 @@ var HtaContextMenu = (function () {
         return MenuItemUI;
     }(_MenuUI));
 
-    var major=0;var minor=0;var build=23;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
+    var major=0;var minor=0;var build=24;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
 
     var HtaContextMenu = /** @class */ (function (_super) {
         __extends(HtaContextMenu, _super);
