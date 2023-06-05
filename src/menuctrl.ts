@@ -1616,7 +1616,7 @@ class MenuItemController {
       }
 
       // close the menu
-      if( !flags.hold || flags.unholdByDblclick && doubleClicked ) {
+      if( !flags.hold && !flags.unselectable || flags.unholdByDblclick && doubleClicked ) {
         if( !flash )
           queue.sleep(100);
         queue.next((val, repeat) => {

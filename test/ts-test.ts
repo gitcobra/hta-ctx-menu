@@ -3,7 +3,7 @@ import HtaContextMenu from "../dist/hta-ctx-menu.esm";
 
 const CheckRecord = { checked: false };
 
-const menu = new HtaContextMenu<HTMLElement>({
+const menu = new HtaContextMenu({
   skin: 'classic',
   //autoClose: false,
   //fontSize: 20,
@@ -132,6 +132,8 @@ const menu = new HtaContextMenu<HTMLElement>({
                 type: 'radios',
                 global: true,
                 name: 'demandableradio',
+                selectedIndex: 0,
+                uncheckable: true,
                 labels: [
                   {label: 'A', id:'A1'},
                   {label: 'B', id:'B1'},

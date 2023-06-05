@@ -130,6 +130,8 @@
                                     type: 'radios',
                                     global: true,
                                     name: 'demandableradio',
+                                    selectedIndex: 0,
+                                    uncheckable: true,
                                     labels: [
                                         { label: 'A', id: 'A1' },
                                         { label: 'B', id: 'B1' },

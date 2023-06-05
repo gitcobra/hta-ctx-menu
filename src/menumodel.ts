@@ -10,7 +10,7 @@ type MenuGlobalEventNames = 'highlight' | 'click' | 'dblclick' | 'activate';
 type MenuGlobalEventsTypeForUser = {[P in MenuGlobalEventNames as `on${P}`]?: UserEventListener};
 type MenuGlobalEventNamesForUser = keyof MenuGlobalEventsTypeForUser;
 
-const AllMenuTypesList = ['normal', 'radio', 'checkbox', 'separator', 'submenu', 'popup', 'demand', 'radios'] as const;
+const AllMenuTypesList = ['normal', 'radio', 'checkbox', 'separator', 'submenu', 'popup', 'demand', 'radios', 'checkboxes'] as const;
 type AllMenuTypes = typeof AllMenuTypesList[number];
 const MenuItemTypesList = ['normal', 'radio', 'checkbox', 'separator', 'submenu', 'popup'] as const;
 type MenuItemTypes = typeof MenuItemTypesList[number];
@@ -24,6 +24,7 @@ interface MenuItemNormalParameter {
   type?: 'normal'
   label: string
   html?: boolean
+  nowrap?: boolean
   icon?: IconSettingType
   customClass?: string
   title?: string
@@ -59,6 +60,17 @@ interface _MenuItemCheckableParameter extends Omit<MenuItemNormalParameter, 'ico
 interface MenuItemCheckboxParameter extends _MenuItemCheckableParameter {
   type: 'checkbox'
   checkboxIcon?: CheckableIconPairParam
+}
+interface MenuItemCheckboxGroupParameter extends Omit<MenuItemCheckboxParameter, 'type' | 'name' | 'checked' | 'value' | 'label'> {
+  type: 'checkboxes'
+  names:
+    {
+      [name: string]: boolean
+    }
+  labels?:
+    {
+      [name: string]: string
+    }
 }
 interface MenuItemRadioParameter extends _MenuItemCheckableParameter {
   type: 'radio'
@@ -155,7 +167,7 @@ interface MenuItemSeparatorParameter {
   //separatorPos?: 'all' | 'right' | 'left'
 }
 
-type MenuItemCreateParameter = MenuItemParameter | MenuItemDemandParameter | MenuItemRadioGroupParameter;
+type MenuItemCreateParameter = MenuItemParameter | MenuItemDemandParameter | MenuItemRadioGroupParameter | MenuItemCheckboxGroupParameter;
 type MenuItemCreateParameterList = (MenuItemCreateParameter | undefined | null)[];
 interface MenuItemDemandParameter {
   type: 'demand'
@@ -229,6 +241,7 @@ type MenuItemFlagsType = {
   disabled?: boolean
   flash?: number
   html?: boolean
+  nowrap?: boolean
   
   checked?: boolean
   usericon?: boolean
@@ -415,6 +428,7 @@ class MenuNormal extends _MenuModelBase {
   protected readonly _type: AllMenuTypes = 'normal';
   protected _label: string; // html or text for its label
   protected _useHTML: boolean = false;
+  protected _nowrap: boolean = true;
   protected _union = false; // no left and right padding spaces
   protected _icon?: IconSettingType; // icon path
   protected _title?: string;
@@ -457,6 +471,8 @@ class MenuNormal extends _MenuModelBase {
     this._unlistening = !!param.unlistening;
     this._flash = param.flash || 0;
     this._useHTML = !!param.html;
+    if( typeof param.nowrap === 'boolean' )
+      this._nowrap = param.nowrap;
 
     // events
     this.onclick = param.onclick;
@@ -578,6 +594,7 @@ class MenuNormal extends _MenuModelBase {
       holdParent: this._holdParent,
       flash: this._flash,
       html: this._useHTML,
+      nowrap: this._nowrap,
 
       unselectable: this._unselectable,
       disabled: this._disabled,
@@ -807,20 +824,22 @@ class MenuRadio extends _MenuCheckable {
     // initialize radio index
     //this._radioIndex = this._recordSubmenu.countRadioIndex(this._name);
     this._radioIndex = this._parent.countRadioIndex(this._name, this._global, this._id);
-    console.log([this._radioIndex, this._label]);
+    //console.log([this._radioIndex, this._label]);
+
+    this._uncheckable = !!args.uncheckable;
 
     // decide checked status
     if( this._checked ) {
       this._record.selectedIndex = this._radioIndex;
     }
     else {
-      if( typeof this._record.selectedIndex !== 'number' )
-        this._record.selectedIndex = 0;
+      // always check index 0 by default unless _uncheckable flag is true
+      if( typeof this._record.selectedIndex !== 'number' ) {
+        this._record.selectedIndex = this._uncheckable ? -1 : 0;
+      }
       if( this._record.selectedIndex === this._radioIndex )
         this._checked = true;
     }
-
-    this._uncheckable = !!args.uncheckable;
 
     // update the icon
     this.updateCheckableIcon(true);
@@ -1122,6 +1141,9 @@ class MenuSubmenu extends MenuNormal {
           case 'radios':
             items = this._extractRadiosParameter(param as MenuItemRadioGroupParameter, demanded);
             break;
+          case 'checkboxes':
+            items = this._extractCheckboxParameter(param as MenuItemCheckboxGroupParameter, demanded);
+            break;
           case 'submenu':
             item = new MenuSubmenu(param as MenuItemSubmenuParameter, this, demanded);
             break;
@@ -1159,7 +1181,8 @@ class MenuSubmenu extends MenuNormal {
       // generate radio names automatically if doesn't exist
       const name = param.name || 'nonameradios_' + _MenuModel_uniqueId++;
       const serialId = param.serialId;
-      const selectedIndex = param.selectedIndex || -1;
+      const selectedIndex = typeof param.selectedIndex !== 'number' ? -1 : param.selectedIndex;
+      const disabledAll = !!param.disabled;
       
       for( let i = 0; i < labels.length; i++ ) {
         let label, checked, value, disabled, unselectable, unlistening, id;
@@ -1190,7 +1213,7 @@ class MenuSubmenu extends MenuNormal {
         unselectable = !!unselectable;
 
         // create a MenuCheckable
-        list.push(new MenuRadio({
+        const radio = new MenuRadio({
           type: 'radio',
           label: label,
           html: param.html,
@@ -1203,13 +1226,53 @@ class MenuSubmenu extends MenuNormal {
           onchange: param.onchange,
           onclick: param.onclick,
           ondblclick: param.ondblclick,
+
           onhighlight: param.onhighlight,
           flash: param.flash,
           hold: param.hold,
-          disabled,
+          holdParent: param.holdParent,
+          uncheckable: param.uncheckable,
+          unholdByDblclick: param.unholdByDblclick,
+
+          disabled: disabled || disabledAll,
           unselectable,
           unlistening,
           radioIcon: param.radioIcon,
+        }, this, demanded);
+        
+        list.push(radio);
+      }
+    }
+    return list;
+  }
+  private _extractCheckboxParameter(param: MenuItemCheckboxGroupParameter, demanded?: boolean): MenuCheckbox[] {
+    const list: MenuCheckbox[] = [];
+    if( param.hasOwnProperty('names') ) {
+      const names = param.names;
+      const labels = param.labels || {};
+      
+      // generate radio names automatically if doesn't exist
+      for( const name in names ) {
+        let label, value, disabled, unselectable, unlistening, id;
+        
+        const checked = !!names[name];
+        label = labels[name] || name;
+
+        // create a MenuCheckable
+        list.push(new MenuCheckbox({
+          type: 'checkbox',
+          label: label,
+          name,
+          //record: param.record,
+          global: param.global,
+          checked,
+          onchange: param.onchange,
+          onclick: param.onclick,
+          ondblclick: param.ondblclick,
+          onhighlight: param.onhighlight,
+          flash: param.flash,
+          hold: param.hold,
+          checkboxIcon: param.checkboxIcon,
         }, this, demanded));
       }
     }

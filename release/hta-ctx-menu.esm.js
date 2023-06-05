@@ -1,6 +1,6 @@
 /*
   title: hta-ctx-menu
-  version: 0.0.20
+  version: 0.0.23
   github: https://github.com/gitcobra/hta-ctx-menu
 */
 var extendStatics = function(d, b) {
@@ -271,7 +271,7 @@ var EventAttacher = /** @class */ (function () {
 }());
 
 var _a, _b;
-var AllMenuTypesList = ['normal', 'radio', 'checkbox', 'separator', 'submenu', 'popup', 'demand', 'radios'];
+var AllMenuTypesList = ['normal', 'radio', 'checkbox', 'separator', 'submenu', 'popup', 'demand', 'radios', 'checkboxes'];
 function convertCheckableIconPairParam(param) {
     if (param instanceof Array) {
         if (param.length !== 2)
@@ -447,6 +447,7 @@ var MenuNormal = /** @class */ (function (_super) {
         _this = _super.call(this, args, parent, demanded) || this;
         _this._type = 'normal';
         _this._useHTML = false;
+        _this._nowrap = true;
         _this._union = false; // no left and right padding spaces
         _this._unselectable = false; // unselectable items will not be highlighted
         _this._disabled = false; // disabled
@@ -472,6 +473,8 @@ var MenuNormal = /** @class */ (function (_super) {
         _this._unlistening = !!param.unlistening;
         _this._flash = param.flash || 0;
         _this._useHTML = !!param.html;
+        if (typeof param.nowrap === 'boolean')
+            _this._nowrap = param.nowrap;
         // events
         _this.onclick = param.onclick;
         _this.ondblclick = param.ondblclick;
@@ -586,6 +589,7 @@ var MenuNormal = /** @class */ (function (_super) {
             holdParent: this._holdParent,
             flash: this._flash,
             html: this._useHTML,
+            nowrap: this._nowrap,
             unselectable: this._unselectable,
             disabled: this._disabled,
             unlistening: this._unlistening
@@ -769,18 +773,21 @@ var MenuRadio = /** @class */ (function (_super) {
         }
         // initialize radio index
         //this._radioIndex = this._recordSubmenu.countRadioIndex(this._name);
-        _this._radioIndex = _this._parent.countRadioIndex(_this._name, _this._global);
+        _this._radioIndex = _this._parent.countRadioIndex(_this._name, _this._global, _this._id);
+        //console.log([this._radioIndex, this._label]);
+        _this._uncheckable = !!args.uncheckable;
         // decide checked status
         if (_this._checked) {
             _this._record.selectedIndex = _this._radioIndex;
         }
         else {
-            if (typeof _this._record.selectedIndex !== 'number')
-                _this._record.selectedIndex = 0;
+            // always check index 0 by default unless _uncheckable flag is true
+            if (typeof _this._record.selectedIndex !== 'number') {
+                _this._record.selectedIndex = _this._uncheckable ? -1 : 0;
+            }
             if (_this._record.selectedIndex === _this._radioIndex)
                 _this._checked = true;
         }
-        _this._uncheckable = !!args.uncheckable;
         // update the icon
         _this.updateCheckableIcon(true);
         return _this;
@@ -994,9 +1001,6 @@ var MenuSubmenu = /** @class */ (function (_super) {
     /**
      * create pre-items
      * MenuDemand items are not extracted yet at this time
-     * @private
-     * @param {(MenuItemsCreateParameter | MenuItemsCreateParameter[])} args
-     * @memberof MenuSubmenu
      */
     MenuSubmenu.prototype._preCreateItems = function (args, demanded) {
         if (!(args instanceof Array))
@@ -1016,6 +1020,9 @@ var MenuSubmenu = /** @class */ (function (_super) {
                 switch (param.type) {
                     case 'radios':
                         items = this._extractRadiosParameter(param, demanded);
+                        break;
+                    case 'checkboxes':
+                        items = this._extractCheckboxParameter(param, demanded);
                         break;
                     case 'submenu':
                         item_3 = new MenuSubmenu(param, this, demanded);
@@ -1052,17 +1059,25 @@ var MenuSubmenu = /** @class */ (function (_super) {
             var labels = param.labels;
             // generate radio names automatically if doesn't exist
             var name_2 = param.name || 'nonameradios_' + _MenuModel_uniqueId++;
-            var selectedIndex = param.selectedIndex || -1;
+            var serialId = param.serialId;
+            var selectedIndex = typeof param.selectedIndex !== 'number' ? -1 : param.selectedIndex;
+            var disabledAll = !!param.disabled;
             for (var i = 0; i < labels.length; i++) {
-                var label = void 0, checked = void 0, value = void 0, disabled = void 0, unselectable = void 0, unlistening = void 0;
+                var label = void 0, checked = void 0, value = void 0, disabled = void 0, unselectable = void 0, unlistening = void 0, id = void 0;
                 label = labels[i];
                 if (!label)
                     continue;
+                // set id automatically
+                if (serialId) {
+                    id = name_2 + '_serialID_' + i;
+                }
                 if (label instanceof Array) {
                     _c = label, label = _c[0], value = _c[1], checked = _c[2];
                 }
                 else if (label instanceof Object) {
-                    (_d = label, label = _d.label, checked = _d.checked, value = _d.value, unselectable = _d.unselectable, disabled = _d.disabled, unlistening = _d.unlistening);
+                    var id2 = void 0;
+                    (_d = label, label = _d.label, checked = _d.checked, value = _d.value, unselectable = _d.unselectable, disabled = _d.disabled, unlistening = _d.unlistening, id2 = _d.id);
+                    id = id2 || id;
                 }
                 else {
                     label = String(label);
@@ -1072,10 +1087,11 @@ var MenuSubmenu = /** @class */ (function (_super) {
                 disabled = !!disabled;
                 unselectable = !!unselectable;
                 // create a MenuCheckable
-                list.push(new MenuRadio({
+                var radio = new MenuRadio({
                     type: 'radio',
                     label: label,
                     html: param.html,
+                    id: id,
                     name: name_2,
                     record: param.record,
                     global: param.global,
@@ -1087,17 +1103,51 @@ var MenuSubmenu = /** @class */ (function (_super) {
                     onhighlight: param.onhighlight,
                     flash: param.flash,
                     hold: param.hold,
-                    disabled: disabled,
+                    holdParent: param.holdParent,
+                    uncheckable: param.uncheckable,
+                    unholdByDblclick: param.unholdByDblclick,
+                    disabled: disabled || disabledAll,
                     unselectable: unselectable,
                     unlistening: unlistening,
                     radioIcon: param.radioIcon
+                }, this, demanded);
+                list.push(radio);
+            }
+        }
+        return list;
+    };
+    MenuSubmenu.prototype._extractCheckboxParameter = function (param, demanded) {
+        var list = [];
+        if (param.hasOwnProperty('names')) {
+            var names = param.names;
+            var labels = param.labels || {};
+            // generate radio names automatically if doesn't exist
+            for (var name_3 in names) {
+                var label = void 0;
+                var checked = !!names[name_3];
+                label = labels[name_3] || name_3;
+                // create a MenuCheckable
+                list.push(new MenuCheckbox({
+                    type: 'checkbox',
+                    label: label,
+                    name: name_3,
+                    //record: param.record,
+                    global: param.global,
+                    checked: checked,
+                    onchange: param.onchange,
+                    onclick: param.onclick,
+                    ondblclick: param.ondblclick,
+                    onhighlight: param.onhighlight,
+                    flash: param.flash,
+                    hold: param.hold,
+                    checkboxIcon: param.checkboxIcon
                 }, this, demanded));
             }
         }
         return list;
     };
     /**
-     * extract all MenuDemand items and return completed item list
+     * extract all MenuDemand items and return complete item list
      * @param {*} [eventObj]
      * @return {*}
      * @memberof MenuSubmenu
@@ -1163,14 +1213,22 @@ var MenuSubmenu = /** @class */ (function (_super) {
     MenuSubmenu.prototype.resetRadioIndex = function () {
         this._radioCount = {};
     };
-    MenuSubmenu.prototype.countRadioIndex = function (name, global) {
+    MenuSubmenu.prototype.countRadioIndex = function (name, global, id) {
         if (global === void 0) { global = false; }
         var repo = global ? this._root._globalRadioCount : this._radioCount;
         if (!name || typeof name !== 'string') {
             name = '!noname';
         }
-        repo[name] = repo[name] || 0;
-        return repo[name]++;
+        var dat = repo[name] = repo[name] || {
+            index: 0,
+            ids: {}
+        };
+        if (id) {
+            if (typeof dat.ids[id] === 'number')
+                return dat.ids[id];
+            dat.ids[id] = dat.index;
+        }
+        return dat.index++;
     };
     MenuSubmenu.prototype.getItems = function () {
         return this._items.concat();
@@ -2498,6 +2556,10 @@ var MenuDialogView = /** @class */ (function (_super) {
     MenuDialogView.prototype.getLayer = function () {
         return this._layer;
     };
+    MenuDialogView.prototype.focus = function () {
+        var _this = this;
+        VNodeUpdater.callback(function () { return _this._win.focus(); });
+    };
     MenuDialogView.prototype.setDocumentClass = function (cstring, flag, immediate) {
         if (flag === void 0) { flag = true; }
         if (immediate === void 0) { immediate = false; }
@@ -2807,7 +2869,7 @@ var MenuItemView = /** @class */ (function (_super) {
         VNodeUpdater.update(list);
     };
     MenuItemView.prototype.update = function (_a) {
-        var type = _a.type, label = _a.label, icon = _a.icon, arrow = _a.arrow, _b = _a.flags, _c = _b === void 0 ? {} : _b, unselectable = _c.unselectable, checked = _c.checked, disabled = _c.disabled, html = _c.html, usericon = _c.usericon;
+        var type = _a.type, label = _a.label, icon = _a.icon, arrow = _a.arrow, _b = _a.flags, _c = _b === void 0 ? {} : _b, unselectable = _c.unselectable, checked = _c.checked, disabled = _c.disabled, html = _c.html, usericon = _c.usericon, nowrap = _c.nowrap;
         switch (type) {
             case 'separator':
                 return;
@@ -2849,7 +2911,10 @@ var MenuItemView = /** @class */ (function (_super) {
                 }
                 // set label
                 if (typeof label !== 'undefined') {
-                    //this._vcontentContainer.append(label);
+                    if (typeof nowrap === 'boolean') {
+                        // change white-space
+                        this._getVNode(ESLCT_ITEM.CONTENT).addStyle('white-space:' + (nowrap ? 'nowrap' : 'normal'));
+                    }
                     this._getVNode(ESLCT_ITEM.CONTENT_CONTAINER).html(label, !html);
                 }
                 // set unselectable
@@ -2902,9 +2967,8 @@ var MenuItemView = /** @class */ (function (_super) {
             var size = icon.fontSize && (typeof icon.fontSize === 'number' ? icon.fontSize + 'px' : String(icon.fontSize));
             velement.html(text);
             velement.setStyle("".concat(family ? "font-family:".concat(family, ";") : ''));
-            velement.addStyle("".concat(size ? "font-size:".concat(size, ";") : ''));
+            velement.addStyle("".concat(size ? "font-size:".concat(size, ";") : 'font-size:130%;'));
             velement.addStyle("visibility:".concat(icon.blank ? 'hidden' : 'visible'));
-            //console.log(family+":"+size+":"+icon.blank, "lime");
         }
     };
     MenuItemView.prototype._getTransTargets = function () {
@@ -3002,7 +3066,7 @@ var VNodeUpdater = new VirtualNodeUpdater();
 var _CommonUniqueCounter = 0;
 _ViewBase.hookVnodeUpdater(VNodeUpdater);
 
-var css_default = "#system---submenu-dialog-margin { margin-right: -4px; margin-left: 4px; } body { background-color: ThreeDHighlight; } #container1 { position: relative; padding: 1px; margin: 0px; border: 2px outset ThreeDHighlight; border-collapse: collapse; border-spacing: 0px; zoom: 1; background-color: ThreeDFace; } #container2 { } #container3 {} #menu-container2 { } #menu-container3 { } #menu-table { color: WindowText; font-size: x-small; } #menu-table tr { padding: 0px; margin: 0px; border-width: 0px; } #menu-table td { white-space: nowrap; padding: 0px; } #menu-table tr.menuitem { white-space: nowrap; } #menu-table tr.highlight { background-color: highlight; color: highlightText; } #menu-table td.icon { text-align: center; padding: 2px; font-size: small; } #menu-table tr.highlight td.icon { /* border-right-width: 0px; padding-right: 4px; */ } #menu-table td.content { display: inline-block; vertical-align: middle; padding-left: 4px; } #menu-table .content-container { } #menu-table td.arrow { text-align: center; font-family: Webdings; } #menu-table .arrow-container { } #menu-table td.icon .icon-container { width: 1em; } #menu-table td.content .content-container { } #menu-table tr.separator .content { font-size: 1px; line-height: 1px; height: 1px; margin: 0px; padding: 0px; } #menu-table tr.separator .hr { border-top: 1px solid ThreeDShadow; border-bottom: 1px solid ThreeDHighlight; } .deco-frame { display: none; } .deco-frame.top-left { } .deco-frame.top-center { } .deco-frame.top-right { } .deco-frame.middle-left { } .deco-frame.middle-right { } .deco-frame.bottom-left { } .deco-frame.bottom-center { } .deco-frame.bottom-right { }";
+var css_default = "#system---submenu-dialog-margin { margin-right: -4px; margin-left: 4px; } body { background-color: ThreeDHighlight; } #container1 { position: relative; padding: 1px; margin: 0px; border: 2px outset ThreeDHighlight; border-collapse: collapse; border-spacing: 0px; zoom: 1; background-color: ThreeDFace; } #container2 { } #container3 {} #menu-container2 { } #menu-container3 { } #menu-table { color: WindowText; font-size: x-small; } #menu-table tr { padding: 0px; margin: 0px; border-width: 0px; } #menu-table td { white-space: nowrap; padding: 0px; } #menu-table tr.menuitem { } #menu-table tr.highlight { background-color: highlight; color: highlightText; } #menu-table td.icon { text-align: center; padding: 2px; font-size: small; } #menu-table tr.highlight td.icon { /* border-right-width: 0px; padding-right: 4px; */ } #menu-table td.content { display: inline-block; vertical-align: middle; padding-left: 4px; } #menu-table .content-container { } #menu-table td.arrow { text-align: center; font-family: Webdings; } #menu-table .arrow-container { } #menu-table td.icon .icon-container { width: 1em; } #menu-table td.content .content-container { } #menu-table tr.separator .content { font-size: 1px; line-height: 1px; height: 1px; margin: 0px; padding: 0px; } #menu-table tr.separator .hr { border-top: 1px solid ThreeDShadow; border-bottom: 1px solid ThreeDHighlight; } .deco-frame { display: none; } .deco-frame.top-left { } .deco-frame.top-center { } .deco-frame.top-right { } .deco-frame.middle-left { } .deco-frame.middle-right { } .deco-frame.bottom-left { } .deco-frame.bottom-center { } .deco-frame.bottom-right { }";
 
 var css_xp = "#system---submenu-dialog-margin { margin-right: -4px; margin-left: 4px; } body { position: relative; background-color: rgb(255, 255, 255); } #container1 { position: relative; zoom: 1; padding: 2px; border: 1px solid rgb(172, 168, 153); background-color: rgb(255, 255, 255); } #menu-table { color: rgb(0, 0, 0); font-size: x-small; font-family: Tahoma; } body.trans-to-load #container1 { filter: progid:DXImageTransform.Microsoft.Fade(duration=0.3); position: relative; } #container2 { visibility: hidden; } body.load #container2 { visibility: visible; } #menu-table tr.highlight { background-color: rgb(49, 106, 197); color: rgb(255, 255, 255); } #menu-table td.icon { text-align: center; padding: 2px; font-size: x-small; } #menu-table td.content { padding-left: 0px; } #menu-table td.arrow { text-align: center; font-family: Webdings; padding-left: 0.6em; } #menu-table td.icon .icon-container { width: 1em; } #menu-table tr.separator .content { font-size: 1px; line-height: 1px; height: 1px; margin: 0px; padding: 0px; } #menu-table tr.separator .hr { border-top: 1px solid rgb(172, 168, 153); border-bottom: 1px solid rgb(255, 255, 255); margin: 2px 0px; }";
 
@@ -3054,6 +3118,10 @@ var MenuRootController = /** @class */ (function (_super) {
         //private _locked: number = 0; // locked stack number
         _this_1._readyToUse = false;
         _this_1._isUpdatingView = false;
+        _this_1._openedPos = {
+            x: 0,
+            y: 0
+        };
         _this_1._model = new MenuSubmenu(param /*, inheritAttr, true*/);
         MenuDialogView.hookBeforeUpdate(function () {
             _this_1.setLocked(true);
@@ -3069,7 +3137,11 @@ var MenuRootController = /** @class */ (function (_super) {
      * create controller and view
      */
     MenuRootController.prototype.open = function (x, y, ctx, parentWindow) {
+        if (this._locked)
+            return;
         this.close();
+        this._openedPos.x = x;
+        this._openedPos.y = y;
         var ctrl = new MenuContainerController(this, ctx, { base: 'screen', marginX: x, marginY: y }, parentWindow);
         if (ctrl === null || ctrl === void 0 ? void 0 : ctrl.getView()) {
             this._ctrl = ctrl;
@@ -3087,8 +3159,8 @@ var MenuRootController = /** @class */ (function (_super) {
     MenuRootController.prototype.isUpdatingView = function () {
         return this._isUpdatingView;
     };
-    MenuRootController.prototype.getPosition = function () {
-        return {};
+    MenuRootController.prototype.getLastPosition = function () {
+        return __assign({}, this._openedPos);
     };
     MenuRootController.prototype.getRectangleOfWholeMenus = function () {
         var _a;
@@ -3132,6 +3204,10 @@ var MenuRootController = /** @class */ (function (_super) {
     };
     MenuRootController.prototype.clearGlobalEvents = function () {
         this._model.clearGlobalEvents();
+    };
+    MenuRootController.prototype.focus = function () {
+        var _a, _b;
+        (_b = (_a = this._ctrl) === null || _a === void 0 ? void 0 : _a.getView()) === null || _b === void 0 ? void 0 : _b.focus();
     };
     /*
     isPopup(): this is PopupController {
@@ -3638,6 +3714,11 @@ var MenuContainerController = /** @class */ (function () {
     MenuContainerController.prototype.getViewPosition = function () {
         return this._viewPosition;
     };
+    MenuContainerController.prototype.getDialogPosition = function () {
+        var _a;
+        var pos = (_a = this._view) === null || _a === void 0 ? void 0 : _a.getDialogPosition();
+        return pos ? __assign({}, pos) : null;
+    };
     MenuContainerController.prototype.getModel = function () {
         return this._model;
     };
@@ -3724,7 +3805,7 @@ var MenuContainerController = /** @class */ (function () {
         // create child instance
         this.getRootController().setLocked(true);
         var child = new MenuContainerController(item, this._ctx, { base: 'item', posX: 'right-out', marginLeft: marginLeft, marginRight: marginRight });
-        if (child instanceof (MenuContainerController)) {
+        if (child instanceof MenuContainerController) {
             this._child = child;
             this.getRootController().setLastChild(child);
             var cpos = child.getViewPosition();
@@ -4356,7 +4437,7 @@ var MenuItemController = /** @class */ (function () {
                 });
             }
             // close the menu
-            if (!flags.hold || flags.unholdByDblclick && doubleClicked) {
+            if (!flags.hold && !flags.unselectable || flags.unholdByDblclick && doubleClicked) {
                 if (!flash)
                     queue.sleep(100);
                 queue.next(function (val, repeat) {
@@ -4397,8 +4478,7 @@ var MenuItemController = /** @class */ (function () {
             case 'submenu':
                 //this._container.openSubmenu(this);
                 if ((_a = this._container) === null || _a === void 0 ? void 0 : _a.isAvailable()) {
-                    if (!this._container.isCurrentOpenedChildSubmenuItem(this) || !((_b = this._view) === null || _b === void 0 ? void 0 : _b.getViewFlag('activate')))
-                        this.activate();
+                    if (!this._container.isCurrentOpenedChildSubmenuItem(this) || !((_b = this._view) === null || _b === void 0 ? void 0 : _b.getViewFlag('activate'))) ;
                 }
                 else
                     return false;
@@ -4458,6 +4538,7 @@ var MenuUserEventObject = /** @class */ (function () {
         this.cancelGlobal = false;
         this.type = type;
         var model = ctrl.getModel();
+        var container;
         if (ctrl instanceof MenuItemController) {
             this.ctx = ctrl.getContainer().getContext();
             this.srcContext = this.ctx;
@@ -4468,14 +4549,20 @@ var MenuUserEventObject = /** @class */ (function () {
                 this.value = model.getValue();
                 this.name = model.getName() || undefined;
                 this.radioIndex = model.isRadio() ? model.getRadioIndex() : undefined;
+                this.selectedIndex = this.radioIndex;
                 this.checked = model.isChecked();
             }
+            container = ctrl.getContainer();
         }
         else {
             this.ctx = ctrl.getContext();
             this.srcContext = this.ctx;
             this.target = new MenuContainerUI(ctrl);
+            container = ctrl;
         }
+        var pos = container.getRootController().getLastPosition();
+        this.rootX = pos.x;
+        this.rootY = pos.y;
     }
     MenuUserEventObject.prototype.dispose = function () {
         if (!this.target)
@@ -4546,7 +4633,7 @@ var MenuItemUI = /** @class */ (function (_super) {
     return MenuItemUI;
 }(_MenuUI));
 
-var major=0;var minor=0;var build=20;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
+var major=0;var minor=0;var build=23;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
 
 var HtaContextMenu = /** @class */ (function (_super) {
     __extends(HtaContextMenu, _super);
@@ -4563,12 +4650,13 @@ var HtaContextMenu = /** @class */ (function (_super) {
     };
     return HtaContextMenu;
 }(MenuRootController));
-// constructor
-//export default HtaContextMenu;
 /*
+// constructor
+export default HtaContextMenu;
+
 // types
 export { HtaContextMenuArguments };
-export { MenuItemsCreateParameter } from "./menumodel"
+export { MenuItemCreateParameter };
 */
 
 export { HtaContextMenu as default };

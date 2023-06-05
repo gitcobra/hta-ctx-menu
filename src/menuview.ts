@@ -1021,7 +1021,7 @@ class MenuItemView extends _ViewBase<MenuItemView> {
     }
     VNodeUpdater.update(list);
   }
-  update({type, label, icon, arrow, flags:{unselectable, checked, disabled, html, usericon}={}}: UpdateItemType) {
+  update({type, label, icon, arrow, flags:{unselectable, checked, disabled, html, usericon, nowrap}={}}: UpdateItemType) {
     console.log(`${this.$L()}#update label:${label} icon:${icon}`, 'darkcyan');
     switch(type) {
       case 'separator':
@@ -1069,7 +1069,10 @@ class MenuItemView extends _ViewBase<MenuItemView> {
         
         // set label
         if( typeof label !== 'undefined' ) {
-          //this._vcontentContainer.append(label);
+          if( typeof nowrap === 'boolean') {
+            // change white-space
+            this._getVNode(ESLCT_ITEM.CONTENT)!.addStyle('white-space:' + (nowrap ? 'nowrap':'normal'));
+          }
           this._getVNode(ESLCT_ITEM.CONTENT_CONTAINER)!.html(label, !html);
         }
         

@@ -37,7 +37,7 @@ npm install hta-ctx-menu
 ```
 #### import:
 ```
-import { HtaContextMenu } from "hta-ctx-menu";
+import HtaContextMenu from "hta-ctx-menu";
 ```
 
 #### Using Typescript:
@@ -48,9 +48,8 @@ please refer to the ./test folder in this repository
 
 ## Usage
 ```
-
 // create an instance
-var menu = new HTAContextMenu({
+var menu = new HtaContextMenu({
   items: [
     // type 'normal' is default item type.
     {
@@ -121,7 +120,6 @@ var menu = new HTAContextMenu({
     // it must have an "ondemand" event handler that returns item parameter.
     {
       type: 'demand',
-      label: 'demandable',
       ondemand: function(ev) {
         var target = ev.ctx; // context when the menu opened
         if( target ) {
@@ -138,14 +136,13 @@ var menu = new HTAContextMenu({
 });
 
 // hook on oncontextmenu event handler
-document.body.oncontextmenu = function() {
+document.oncontextmenu = function() {
   // open the context menu at the specified position.
   // you can also specify its context in the third argument.
   menu.open(event.screenX, event.screenY, event.srcElement);
   
   return false;
 };
-
 ```
 
 ## API Document

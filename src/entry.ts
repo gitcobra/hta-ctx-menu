@@ -13,10 +13,8 @@ DEV: {
 
 export default class HtaContextMenu extends MenuRootController {
   Types: {
-    MenuParameter: HtaContextMenuArguments
-    MenuParameterList: MenuItemCreateParameterList
-    MenuItemParameter: MenuItemCreateParameter
-    OndemandResult: MenuItemCreateParameter | MenuItemCreateParameterList | null | undefined
+    MenuConstructorParameter: HtaContextMenuArguments
+    MenuItemParameter: MenuItemCreateParameter | null | undefined
   } = {} as any;
 
   constructor(param: HtaContextMenuArguments) {
@@ -30,10 +28,11 @@ export default class HtaContextMenu extends MenuRootController {
   }
 }
 
-// constructor
-//export default HtaContextMenu;
 /*
+// constructor
+export default HtaContextMenu;
+
 // types
 export { HtaContextMenuArguments };
-export { MenuItemsCreateParameter } from "./menumodel"
+export { MenuItemCreateParameter };
 */
