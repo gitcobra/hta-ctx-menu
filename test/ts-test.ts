@@ -145,7 +145,7 @@ const menu = new HtaContextMenu({
         ]
       }
     }
-  ]
+  ],
 });
 
 

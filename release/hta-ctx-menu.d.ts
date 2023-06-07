@@ -826,6 +826,7 @@ declare class MenuContainerController {
     private _items;
     private _ctx;
     private _parent;
+    private _root;
     private _rootCtrl;
     private _parentItem;
     private _child;
@@ -935,10 +936,10 @@ declare class MenuContainerController {
     isAvailable(): boolean;
     isLocked(): boolean;
     isDisposed(): boolean;
-    disposeAll(): void;
-    disposeFromParent(): void;
-    disposeChild(): void;
-    dispose(): void;
+    disposeAll(causedItem?: MenuItemController): void;
+    disposeFromParent(causedItem?: MenuItemController): void;
+    disposeChild(causedItem?: MenuItemController): void;
+    dispose(causedItem?: MenuItemController): void;
     private _dispose;
     getDirection(): number;
     $L(): string;
@@ -994,9 +995,10 @@ declare class MenuUserEventObject implements MenuUserEventObjectModel {
     readonly checked?: boolean;
     readonly rootX: number;
     readonly rootY: number;
+    readonly canceled?: boolean;
     value?: any;
     cancelGlobal: boolean;
-    constructor(type: MenuItemUserEventNames, ctrl: MenuContainerController | MenuItemController);
+    constructor(type: MenuItemUserEventNames, ctrl: MenuContainerController | MenuItemController, causedItem?: MenuItemController);
     dispose(): void;
 }
 declare abstract class _MenuUI<T> {

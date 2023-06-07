@@ -281,6 +281,7 @@ class MenuContainerController {
   private _ctx: any;
 
   private _parent: MenuContainerController | null = null;
+  private _root: MenuContainerController;
   private _rootCtrl: MenuRootController;
   private _parentItem: MenuItemController | null = null;
   private _child: MenuContainerController | null = null;
@@ -321,6 +322,7 @@ class MenuContainerController {
       this._model = param.getModel();
       this._rootCtrl = param;
       this._ctx = ctx;
+      this._root = this;
     }
     // it has a parent container
     else {
@@ -328,6 +330,7 @@ class MenuContainerController {
       this._parent = this._parentItem.getContainer();
       this._model = this._parentItem.getModel() as MenuSubmenu;
       this._rootCtrl = this._parent!.getRootController();
+      this._root = this._parent._root;
     }
     this._pos = pos;
 
@@ -1291,7 +1294,7 @@ class MenuContainerController {
   }
 
   isAvailable(): boolean {
-    return !this._disposed && !!(this._view?.isAvailable()) && !this.isLocked();
+    return !this._disposed && !!(this._view?.isAvailable()) && !this.isLocked() && (!this._parent || this._parent.isAvailable())
   }
   isLocked(): boolean {
     return this.getRootController().isLocked(this);
@@ -1299,13 +1302,14 @@ class MenuContainerController {
   isDisposed(): boolean {
     return this._disposed;
   }
-  disposeAll() {
-    this._rootCtrl.close();
+  disposeAll(causedItem?: MenuItemController) {
+    //this._rootCtrl.close();
+    this._root.dispose(causedItem);
   }
-  disposeFromParent() {
-    this._parent?.disposeChild();
+  disposeFromParent(causedItem?: MenuItemController) {
+    this._parent?.disposeChild(causedItem);
   }
-  disposeChild() {
+  disposeChild(causedItem?: MenuItemController) {
     if( this._child ) {
       console.log(`do diposeChild[chl${this._child?.getLayer()}]`, "green");
 
@@ -1324,24 +1328,24 @@ class MenuContainerController {
         contv?.setBodyViewFlagByItem('activate', false, cnumber, customclasses);
       }
       //this.getRootController().setLocked(true);
-      this._child.dispose();
+      this._child.dispose(causedItem);
       //this.getRootController().setLocked(false);
 
       this.clearClosingCurrentChildTimeout();
     }
     this._child = null;
   }
-  dispose() {
+  dispose(causedItem?: MenuItemController) {
     if( this._disposed )
       return;
     console.log(`${this.$L()}#dispose`, 'green');
     this._disposed = true;
-    this._dispose();
+    this._dispose(causedItem);
   }
-  private _dispose() {
+  private _dispose(causedItem?: MenuItemController) {
     if( this.isLocked() ) {
 
-      setTimeout(() => this._dispose(), 100);
+      setTimeout(() => this._dispose(causedItem), 100);
       return;
     }
 
@@ -1379,7 +1383,7 @@ class MenuContainerController {
       }
     }
 
-    this._model.fireUserEvent('unload', this.getContext(), new MenuUserEventObject('unload', this));
+    this._model.fireUserEvent('unload', this.getContext(), new MenuUserEventObject('unload', this, causedItem));
     if( this._parent ) {
       if( !this._parent.isDisposed() ) {
         this._parent.setTopMost();
@@ -1627,7 +1631,7 @@ class MenuItemController {
           
           // dispose entire menu or only current menu
           try {
-            flags.holdParent ? this._container.disposeFromParent() : this._container.disposeAll();
+            flags.holdParent ? this._container.disposeFromParent(this) : this._container.disposeAll(this);
           } catch(e) {
             DEV: {
             console.log(e, 'red');
@@ -1669,6 +1673,7 @@ class MenuItemController {
           if( !this._container.isCurrentOpenedChildSubmenuItem(this) || !this._view?.getViewFlag('activate') ) {
             // disable opening submenu by mouse-staying at this time because of the problem that it opens parentless child
             //this.activate();
+            this.activate(); // enabled experimentally
           }
         }
         else
@@ -1751,10 +1756,11 @@ class MenuUserEventObject implements MenuUserEventObjectModel {
   readonly checked?: boolean;
   readonly rootX: number;
   readonly rootY: number;
+  readonly canceled?: boolean; // menu item is not clicked (e.g. automatically closed on focusout)
   value?: any;
   cancelGlobal: boolean = false;
 
-  constructor(type: MenuItemUserEventNames, ctrl: MenuContainerController | MenuItemController) {
+  constructor(type: MenuItemUserEventNames, ctrl: MenuContainerController | MenuItemController, causedItem?: MenuItemController) {
     this.type = type;
     
     const model = ctrl.getModel();
@@ -1782,6 +1788,8 @@ class MenuUserEventObject implements MenuUserEventObjectModel {
       
       container = ctrl;
     }
+    
+    this.canceled = !causedItem;
     
     const pos = container.getRootController().getLastPosition();
     this.rootX = pos.x;

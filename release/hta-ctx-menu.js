@@ -1,6 +1,6 @@
 /*
   title: hta-ctx-menu
-  version: 0.0.24
+  version: 0.0.26
   github: https://github.com/gitcobra/hta-ctx-menu
 */
 var HtaContextMenu = (function () {
@@ -3350,6 +3350,7 @@ var HtaContextMenu = (function () {
                 this._model = param.getModel();
                 this._rootCtrl = param;
                 this._ctx = ctx;
+                this._root = this;
             }
             // it has a parent container
             else {
@@ -3357,6 +3358,7 @@ var HtaContextMenu = (function () {
                 this._parent = this._parentItem.getContainer();
                 this._model = this._parentItem.getModel();
                 this._rootCtrl = this._parent.getRootController();
+                this._root = this._parent._root;
             }
             this._pos = pos;
             pos = this._model.isPopup() && this._model.getPosObject() || pos || {};
@@ -4166,7 +4168,7 @@ var HtaContextMenu = (function () {
         };
         MenuContainerController.prototype.isAvailable = function () {
             var _a;
-            return !this._disposed && !!((_a = this._view) === null || _a === void 0 ? void 0 : _a.isAvailable()) && !this.isLocked();
+            return !this._disposed && !!((_a = this._view) === null || _a === void 0 ? void 0 : _a.isAvailable()) && !this.isLocked() && (!this._parent || this._parent.isAvailable());
         };
         MenuContainerController.prototype.isLocked = function () {
             return this.getRootController().isLocked(this);
@@ -4174,14 +4176,15 @@ var HtaContextMenu = (function () {
         MenuContainerController.prototype.isDisposed = function () {
             return this._disposed;
         };
-        MenuContainerController.prototype.disposeAll = function () {
-            this._rootCtrl.close();
+        MenuContainerController.prototype.disposeAll = function (causedItem) {
+            //this._rootCtrl.close();
+            this._root.dispose(causedItem);
         };
-        MenuContainerController.prototype.disposeFromParent = function () {
+        MenuContainerController.prototype.disposeFromParent = function (causedItem) {
             var _a;
-            (_a = this._parent) === null || _a === void 0 ? void 0 : _a.disposeChild();
+            (_a = this._parent) === null || _a === void 0 ? void 0 : _a.disposeChild(causedItem);
         };
-        MenuContainerController.prototype.disposeChild = function () {
+        MenuContainerController.prototype.disposeChild = function (causedItem) {
             var _b;
             if (this._child) {
                 var opendItem = this._child.getBasedItemController();
@@ -4197,23 +4200,23 @@ var HtaContextMenu = (function () {
                     contv === null || contv === void 0 ? void 0 : contv.setBodyViewFlagByItem('activate', false, cnumber, customclasses);
                 }
                 //this.getRootController().setLocked(true);
-                this._child.dispose();
+                this._child.dispose(causedItem);
                 //this.getRootController().setLocked(false);
                 this.clearClosingCurrentChildTimeout();
             }
             this._child = null;
         };
-        MenuContainerController.prototype.dispose = function () {
+        MenuContainerController.prototype.dispose = function (causedItem) {
             if (this._disposed)
                 return;
             this._disposed = true;
-            this._dispose();
+            this._dispose(causedItem);
         };
-        MenuContainerController.prototype._dispose = function () {
+        MenuContainerController.prototype._dispose = function (causedItem) {
             var _this_1 = this;
             var _a, _b;
             if (this.isLocked()) {
-                setTimeout(function () { return _this_1._dispose(); }, 100);
+                setTimeout(function () { return _this_1._dispose(causedItem); }, 100);
                 return;
             }
             this._currentItem = null;
@@ -4241,7 +4244,7 @@ var HtaContextMenu = (function () {
             }
             catch (e) {
             }
-            this._model.fireUserEvent('unload', this.getContext(), new MenuUserEventObject('unload', this));
+            this._model.fireUserEvent('unload', this.getContext(), new MenuUserEventObject('unload', this, causedItem));
             if (this._parent) {
                 if (!this._parent.isDisposed()) {
                     this._parent.setTopMost();
@@ -4450,7 +4453,7 @@ var HtaContextMenu = (function () {
                         }
                         // dispose entire menu or only current menu
                         try {
-                            flags.holdParent ? _this_1._container.disposeFromParent() : _this_1._container.disposeAll();
+                            flags.holdParent ? _this_1._container.disposeFromParent(_this_1) : _this_1._container.disposeAll(_this_1);
                         }
                         catch (e) {
                         }
@@ -4481,7 +4484,11 @@ var HtaContextMenu = (function () {
                 case 'submenu':
                     //this._container.openSubmenu(this);
                     if ((_a = this._container) === null || _a === void 0 ? void 0 : _a.isAvailable()) {
-                        if (!this._container.isCurrentOpenedChildSubmenuItem(this) || !((_b = this._view) === null || _b === void 0 ? void 0 : _b.getViewFlag('activate'))) ;
+                        if (!this._container.isCurrentOpenedChildSubmenuItem(this) || !((_b = this._view) === null || _b === void 0 ? void 0 : _b.getViewFlag('activate'))) {
+                            // disable opening submenu by mouse-staying at this time because of the problem that it opens parentless child
+                            //this.activate();
+                            this.activate(); // enabled experimentally
+                        }
                     }
                     else
                         return false;
@@ -4537,7 +4544,7 @@ var HtaContextMenu = (function () {
      * this event object is passed as a first argument to each event handler.
      */
     var MenuUserEventObject = /** @class */ (function () {
-        function MenuUserEventObject(type, ctrl) {
+        function MenuUserEventObject(type, ctrl, causedItem) {
             this.cancelGlobal = false;
             this.type = type;
             var model = ctrl.getModel();
@@ -4563,6 +4570,7 @@ var HtaContextMenu = (function () {
                 this.target = new MenuContainerUI(ctrl);
                 container = ctrl;
             }
+            this.canceled = !causedItem;
             var pos = container.getRootController().getLastPosition();
             this.rootX = pos.x;
             this.rootY = pos.y;
@@ -4636,7 +4644,7 @@ var HtaContextMenu = (function () {
         return MenuItemUI;
     }(_MenuUI));
 
-    var major=0;var minor=0;var build=24;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
+    var major=0;var minor=0;var build=26;var tag="";var Ver = {major:major,minor:minor,build:build,tag:tag};
 
     var HtaContextMenu = /** @class */ (function (_super) {
         __extends(HtaContextMenu, _super);
